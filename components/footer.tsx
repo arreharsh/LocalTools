@@ -9,7 +9,7 @@ export function Footer() {
   <div className="max-w-7xl mx-auto px-6 py-10 relative">
     {/* CENTER TEXT */}
     <div className="text-center text-sm text-muted-foreground">
-      Built with focus • No tracking • No noise <span className="p-2">Created with ♥ to help others</span>
+      Privacy focused • No tracking • No ads <span className="p-2">Created with ♥ to help others</span>
     </div>
 
     {/* BOTTOM RIGHT LINKS */}

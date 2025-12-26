@@ -23,7 +23,6 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Mail, PanelLeftClose, PanelLeft, Search } from "lucide-react";
 import { toolCategories } from "@/lib/tools-data";
-import { ThemeToggle } from "./theme-toggle";
 
 interface ToolsSidebarProps {
   selectedTool: string | null;
@@ -55,18 +54,21 @@ export function ToolsSidebar({
       {/* HEADER */}
       <SidebarHeader className="border-b p-4 space-y-3">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2"> 
-            <img src="#" alt="LocalTools" className="size-6 rounded-full shrink-0" />
-            <h2 className="text-lg font-semibold group-data-[collapsible=icon]:hidden">
-             LocalTools
+          <Link href="/" className="group flex items-center gap-2">
+            <img src="/logo.png" alt="LocalTools" className="size-6 hover:scale-110 shrink-0" />
+
+            <h2
+              className="text-lg font-bold transition-all duration-100 group-data-[collapsible=icon]:hidden scale-100 ease-out group-hover:tracking-wide"
+            >
+              LocalTools
             </h2>
           </Link>
-          
+
           <Button
-            variant="ghost"
+            variant="custom"
             size="icon"
             onClick={toggleSidebar}
-            className="size-8 "
+            className="size-8  "
           >
             {state === "expanded" ? (
               <PanelLeftClose className="size-4" />
@@ -75,7 +77,6 @@ export function ToolsSidebar({
             )}
           </Button>
         </div>
-
 
         {/* SEARCH */}
         <div className="group-data-[collapsible=icon]:hidden">
@@ -154,7 +155,6 @@ export function ToolsSidebar({
                                   COMING SOON
                                 </Badge>
                               )}
-
                             </Link>
                           </SidebarMenuButton>
                         </SidebarMenuItem>
@@ -171,7 +171,6 @@ export function ToolsSidebar({
       {/* FOOTER */}
       <SidebarFooter className="border-t p-4">
         <div className="space-y-3 group-data-[collapsible=icon]:hidden">
-         
           <p className="text-xs text-muted-foreground text-center">
             Sign in to save history & favorites
           </p>
