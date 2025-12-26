@@ -30,6 +30,10 @@ export interface ToolCategory {
   tools: Tool[]
 }
 
+export interface ToolsbySearch {
+  [key: string]: Tool[]
+}
+
 export const toolCategories: ToolCategory[] = [
   {
     id: "json",

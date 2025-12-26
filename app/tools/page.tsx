@@ -1,69 +1,124 @@
 "use client";
 
-import React from "react";
-import { ArrowLeft } from "lucide-react";
-
-const ArrowSVG = ({ className = "" }: { className?: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="32"
-    height="32"
-    viewBox="0 0 22 22"
-    className={className}
-  >
-    <path
-      fill="currentColor"
-      d="M3 10V8h1V7h1V6h1V5h1V4h2v2H8v1H7v1h4v1h2v1h1v2h1v7h-2v-6h-1v-2h-2v-1H7v1h1v1h1v2H7v-1H6v-1H5v-1H4v-1"
-    />
-  </svg>
-);
-
-const ArrowI = ({ className = "" }: { className?: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="32"
-    height="32"
-    viewBox="0 0 22 22"
-    className={className}
-  >
-    <path
-      fill="currentColor"
-      d="M5 12v-2h1V9h1V8h1V7h1V6h2v2h-1v1H9v1h9v2H9v1h1v1h1v2H9v-1H8v-1H7v-1H6v-1"
-    />
-  </svg>
-);
+import { useEffect, useRef, useState } from "react";
+import { Search, Command } from "lucide-react";
+import { ALL_TOOLS } from "@/lib/tool-search";
+import FloatingIcons from "@/components/FloatingIcons";
+import { FLOATING_ICONS } from "@/lib/floating-icons";
+import { Footer } from "@/components/footer";
 
 export default function ToolsPage() {
+  const [query, setQuery] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Ctrl / Cmd + K
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
+  const results = ALL_TOOLS.filter((tool) => {
+    const q = query.toLowerCase();
+
+    return (
+      tool.name.toLowerCase().includes(q) || tool.slug.toLowerCase().includes(q)
+    );
+  });
+
   return (
-    <div className="h-screen overflow-hidden bg-background">
-      <div className="relative h-full max-w-7xl mx-auto px-6 py-10">
-        {/* TOP ARROW + TEXT */}
-        <div className="flex items-start mt-6 gap-4">
-          <ArrowI className="w-8 h-8 mt-2" />
+    <>
+      <div className="min-h-screen bg-background flex items-center justify-center px-6">
+        <div className="w-full max-w-xl relative group">
+          {/* Title */}
 
-          <h1 className="text-2xl md:text-xl text max-w-sm leading-snug">
-            Search what tools are <br /> you looking for?
+          <h1 className="text-3xl font-semibold text-center mb-2">
+            Find a tool
           </h1>
-        </div>
-
-        {/* MIDDLE SECTION */}
-        <div className="absolute left-6 top-1/2 -translate-y-1/2 mt-6 flex items-center gap-6">
-          {/* LEFT ARROWS + LINE */}
-          <div className="flex flex-col items-center">
-            <ArrowSVG className="" />
-
-            <div className="h-70 w-px bg-gray-500 my-2" />
-
-            <ArrowSVG className="-rotate-180 scale-x-[-1]" />
+          <p className="text-muted-foreground text-center mb-8">
+            Search from 50+ privacy-focused tools…
+          </p>
+          <div className="absolute inset-0 -top-24">
+            <FloatingIcons icons={FLOATING_ICONS} />
           </div>
 
-          {/* TEXT */}
-          <p className="text-xl md:text-xl font-medium text leading-relaxed">
-            Choose Tools directly <br />
-            from the list :)
-          </p>
+          {/* Search Box */}
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+
+            <input
+              ref={inputRef}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search tools…"
+              className="
+              w-full rounded-xl bg-muted
+              pl-11 pr-20 py-4 text-sm
+              outline-none
+              focus:ring-2 focus:ring-primary
+            "
+            />
+
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-xs text-muted-foreground border rounded-md px-2 py-0.5">
+              <Command className="size-3" />K
+            </div>
+          </div>
+
+          {/* Results */}
+          {query && (
+            <div className="mt-6 rounded-xl border bg-background shadow-sm divide-y relative z-20">
+              {/* TOOLS LIST */}
+              {results.map((tool) => (
+                <button
+                  key={tool.id}
+                  className="
+          w-full flex items-center gap-2
+          px-4 py-3 text-sm text-left
+          hover:bg-muted transition
+        "
+                >
+                  {tool.icon && (
+                    <tool.icon className="size-4 text-muted-foreground shrink-0" />
+                  )}
+                  <span>{tool.name}</span>
+                </button>
+              ))}
+
+              {/* EMPTY STATE (NO TOOL FOUND) */}
+              {results.length === 0 && (
+                <div className="px-4 py-3 text-sm text-muted-foreground text-center">
+                  No tool found
+                </div>
+              )}
+
+              {/* REQUEST TOOL — ALWAYS AT END */}
+              <button
+                className="
+        w-full px-4 py-3 text-sm font-semibold
+        text-pink-600 text-center
+        hover:bg-primary/5 transition
+      "
+              >
+                <span className="">Request a tool +</span>
+              </button>
+            </div>
+          )}
+
+          {/* Hint */}
+          {!query && (
+            <p className="mt-6 text-xs text-muted-foreground text-center">
+              Tip: Press <kbd className="px-1 py-0.5 border rounded">Ctrl</kbd>{" "}
+              + <kbd className="px-1 py-0.5 border rounded">K</kbd> to search
+            </p>
+          )}
         </div>
       </div>
-    </div>
+
+    </>
   );
 }
