@@ -1,15 +1,62 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Search, Command } from "lucide-react";
+import { Search, Command, Link } from "lucide-react";
 import { ALL_TOOLS } from "@/lib/tool-search";
 import FloatingIcons from "@/components/FloatingIcons";
 import { FLOATING_ICONS } from "@/lib/floating-icons";
+import { useRouter } from "next/navigation";
+import RequestToolModal from "@/components/RequestToolModal";
+
 import { Footer } from "@/components/footer";
 
 export default function ToolsPage() {
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+  const [openRequest, setOpenRequest] = useState(false);
+
+  // Animated placeholder
+
+  const PLACEHOLDERS = [
+    "PDF Merge",
+    "Image to PDF",
+    "PDF Compress",
+    "Regex Tester",
+    "JWT Decoder",
+    "URL Encode / Decode",
+  ];
+
+  const [placeholder, setPlaceholder] = useState("");
+  useEffect(() => {
+    let index = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+
+    const type = () => {
+      const current = PLACEHOLDERS[index];
+
+      if (!isDeleting) {
+        setPlaceholder(current.slice(0, charIndex + 1));
+        charIndex++;
+
+        if (charIndex === current.length) {
+          setTimeout(() => (isDeleting = true), 1200);
+        }
+      } else {
+        setPlaceholder(current.slice(0, charIndex - 1));
+        charIndex--;
+
+        if (charIndex === 0) {
+          isDeleting = false;
+          index = (index + 1) % PLACEHOLDERS.length;
+        }
+      }
+    };
+
+    const interval = setInterval(type, isDeleting ? 40 : 80);
+    return () => clearInterval(interval);
+  }, []);
 
   // Ctrl / Cmd + K
   useEffect(() => {
@@ -55,11 +102,11 @@ export default function ToolsPage() {
               ref={inputRef}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search tools…"
+              placeholder={`${placeholder}${placeholder ? "|" : ""}`}
               className="
               w-full rounded-xl bg-muted
               pl-11 pr-20 py-4 text-sm
-              outline-none
+              outline-none placeholder:font-medium
               focus:ring-2 focus:ring-primary
             "
             />
@@ -76,6 +123,7 @@ export default function ToolsPage() {
               {results.map((tool) => (
                 <button
                   key={tool.id}
+                  onClick={() => router.push(`/tools/${tool.slug}`)}
                   className="
           w-full flex items-center gap-2
           px-4 py-3 text-sm text-left
@@ -98,6 +146,7 @@ export default function ToolsPage() {
 
               {/* REQUEST TOOL — ALWAYS AT END */}
               <button
+                onClick={() => setOpenRequest(true)}
                 className="
         w-full px-4 py-3 text-sm font-semibold
         text-pink-600 text-center
@@ -118,7 +167,10 @@ export default function ToolsPage() {
           )}
         </div>
       </div>
-
+      <RequestToolModal
+        open={openRequest}
+        onClose={() => setOpenRequest(false)}
+      />
     </>
   );
 }

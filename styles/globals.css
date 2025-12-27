@@ -171,3 +171,11 @@ body::-webkit-scrollbar {
   width: 0px;
   background: transparent;
 }
+
+.user-no-select {
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+

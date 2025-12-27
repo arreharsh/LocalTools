@@ -14,8 +14,9 @@ const fadeUp = {
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-background text-foreground">
+
       {/* HERO */}
-      <section className="max-w-7xl mx-auto px-6 pt-16 pb-20 text-center">
+      <section className="max-w-7xl mx-auto px-6 pb-20 text-center">
         <motion.div
           initial="hidden"
           animate="visible"
@@ -23,8 +24,8 @@ export default function HomePage() {
           transition={{ duration: 0.6 }}
           className="inline-flex items-center gap-2 px-4 py-1 mb-6 rounded-full bg-green-500/10 border-green-200/20 border border-border text-sm"
         >
-          {/* <Sparkles className="w-4 h-4 text-green-500" /> baad me use krunga */}
-          <img src="/logo.png" alt="Sparkles" className="w-4 h-4" />
+          {/* <img src="/logo.png" alt="Sparkles" className="w-4 h-4" />  baad me use krunga */}
+          <Sparkles className="w-4 h-4" />
           Privacy-first utility tools
         </motion.div>
 

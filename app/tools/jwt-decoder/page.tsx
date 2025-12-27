@@ -174,7 +174,7 @@ function SimpleCard({
       <div className="border-t" />
 
       {/* META */}
-      <div className="grid grid-cols-2 gap-4 px-5 py-4 mt-3 text-sm">
+      <div className="grid grid-cols-2 gap-4 px-5 py-4 mt-4 text-sm">
         {children}
       </div>
     </div>

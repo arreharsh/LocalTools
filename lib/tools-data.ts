@@ -35,21 +35,7 @@ export interface ToolsbySearch {
 }
 
 export const toolCategories: ToolCategory[] = [
-  {
-    id: "json",
-    name: "JSON Tools",
-    icon: Braces,
-    tools: [
-      {
-        id: "jsonFormatter",
-        slug: "json-formatter",
-        name: "Smart JSON Formatter",
-        icon: Braces,
-        category: "json",
-        isNew: true,
-      },
-    ],
-  },
+  
   {
     id: "pdf",
     name: "PDF Tools",
@@ -63,10 +49,25 @@ export const toolCategories: ToolCategory[] = [
         category: "pdf",
       },
       {
+        id: "pdfPageReorder",
+        slug: "pdf-page-reorder",
+        name: "PDF Page Reorder",
+        icon: FileEdit,
+        category: "pdf",
+        isPro: true,
+      },
+      {
         id: "pdfSplit",
         slug: "pdf-split",
         name: "PDF Split",
         icon: Scissors,
+        category: "pdf",
+      },
+      {
+        id:"imgToPdf",
+        slug: "image-to-pdf",
+        name: "Image to PDF",
+        icon: FileText,
         category: "pdf",
       },
       {
@@ -86,6 +87,23 @@ export const toolCategories: ToolCategory[] = [
       },
     ],
   },
+  
+  {
+    id: "json",
+    name: "JSON Tools",
+    icon: Braces,
+    tools: [
+      {
+        id: "jsonFormatter",
+        slug: "json-formatter",
+        name: "Smart JSON Formatter",
+        icon: Braces,
+        category: "json",
+        isNew: true,
+      },
+    ],
+  },
+
   {
     id: "dev",
     name: "Dev Tools",

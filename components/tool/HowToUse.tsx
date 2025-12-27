@@ -4,15 +4,17 @@ type HowToUseProps = {
   title?: string;
   steps: string[];
   tip?: string;
+  className?: string;
 };
 
 export default function HowToUse({
   title = "How to Use",
   steps,
   tip,
+  className,
 }: HowToUseProps) {
   return (
-    <div className="rounded-xl border border-primary/30 bg-primary/5 px-5 py-4 space-y-3">
+    <div className={`rounded-xl border border-primary/30 bg-primary/5 px-5 py-4 space-y-3 ${className}`}>
       {/* Header */}
       <div className="flex items-center gap-2 text-primary font-medium">
         <Info className="w-4 h-4" />

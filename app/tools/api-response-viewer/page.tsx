@@ -105,9 +105,7 @@ export default function ApiResponseViewer() {
 
   /* ---------------- UI ---------------- */
   return (
-    <div className="max-w-7xl xl:max-w-screen-2xl mx-auto px-4 py-10 space-y-8 no-scrollbar ">
-      <BackBtn className="text-sm hover:border  rounded-md px-2 pl-0" />
-      {/* Header */}
+    <div className="max-w-7xl xl:max-w-screen-2xl mx-auto px-4 py-4 space-y-8 no-scrollbar ">
       <div>
         <h1 className="text-3xl font-semibold">API Response Viewer</h1>
         <p className="text-muted-foreground mt-1">
