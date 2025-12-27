@@ -206,7 +206,7 @@ export default function JsonFormatterPage() {
   /* ---------- UI ---------- */
 
   return (
-    <div className="w-full mx-auto px-8 pt-16 pb-10 space-y-8">
+    <div className="w-full mx-auto px-8  pb-10 space-y-8">
       <div>
         <h1 className="text-3xl font-semibold">JSON Formatter</h1>
         <p className="text-muted-foreground mt-1">
