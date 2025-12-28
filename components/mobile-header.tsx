@@ -3,9 +3,17 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Search, Sparkles, X } from "lucide-react";
+import {
+  Search,
+  Sparkles,
+  X,
+  LogOut,
+  User,
+} from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import RequestToolModal from "@/components/RequestToolModal";
+import { useAuth, useAuthModal } from "@/providers/AuthProvider";
+import { supabase } from "@/lib/supabase";
 
 const PLACEHOLDERS = [
   "PDF Merge",
@@ -17,6 +25,8 @@ const PLACEHOLDERS = [
 
 export default function MobileHeader() {
   const router = useRouter();
+  const { user, loading } = useAuth();
+  const { open: openAuth } = useAuthModal();
 
   const [openRequest, setOpenRequest] = useState(false);
 
@@ -54,6 +64,13 @@ export default function MobileHeader() {
   useEffect(() => {
     setMenuOpen(false);
   }, [router]);
+
+  const name =
+    user?.user_metadata?.full_name ||
+    user?.user_metadata?.name ||
+    "User";
+
+  const initial = name.charAt(0).toUpperCase();
 
   return (
     <>
@@ -101,7 +118,7 @@ export default function MobileHeader() {
             {/* MENU */}
             <button
               onClick={() => setMenuOpen((p) => !p)}
-              className={`w-10 h-9 flex items-center justify-center rounded-md hover:bg-muted `}
+              className="w-10 h-9 flex items-center justify-center rounded-md hover:bg-muted"
             >
               {menuOpen ? (
                 <X size={22} />
@@ -141,11 +158,51 @@ export default function MobileHeader() {
       >
         <div className="mx-2 rounded-xl bg-background/80 backdrop-blur-xl border shadow-lg">
           <div className="px-4 py-3 space-y-2">
-            {/* THEME TOGGLE */}
+            {/* THEME */}
             <div className="flex items-center justify-between px-3 py-2 rounded-md hover:bg-muted/60">
               <span className="text-sm font-semibold">Theme</span>
               <ThemeToggle />
             </div>
+
+            <div className="border-t border-border p-1" />
+
+            {/* USER SECTION */}
+            {!loading && user && (
+              <div className="flex items-center gap-3 px-3 py-2 rounded-md bg-muted/40">
+                <div className="flex size-9 items-center justify-center rounded-full bg-primary/15 text-primary font-semibold">
+                  {initial}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    Free plan
+                  </p>
+                </div>
+                <button
+                  onClick={async () => {
+                    await supabase.auth.signOut();
+                    setMenuOpen(false);
+                  }}
+                  className="text-red-600 hover:text-red-700"
+                >
+                  <LogOut size={18} />
+                </button>
+              </div>
+            )}
+
+            {!loading && !user && (
+              <button
+                onClick={() => {
+                  openAuth();
+                  setMenuOpen(false);
+                }}
+                className="w-full px-3 py-2 rounded-md bg-primary shadow-md
+                           border border-border text-center font-medium
+                           text-sm text-primary-foreground"
+              >
+                Login | Sign Up
+              </button>
+            )}
 
             <div className="border-t border-border p-1" />
 
@@ -170,19 +227,14 @@ export default function MobileHeader() {
 
             <button
               onClick={() => setOpenRequest(true)}
-              className="w-full px-3 py-2 rounded-md border border-border text-left font-semibold text-sm "
+              className="w-full px-3 py-2 rounded-md border border-border text-left font-semibold text-sm"
             >
               Request a Tool
-            </button>
-            <button
-              onClick={() => router.push("/contact")}
-              className="w-full px-3 py-2 rounded-md bg-primary shadow-md border border-border text-center font-medium text-sm text-primary-foreground"
-            >
-              Login | Sign Up
             </button>
           </div>
         </div>
       </div>
+
       <RequestToolModal
         open={openRequest}
         onClose={() => setOpenRequest(false)}

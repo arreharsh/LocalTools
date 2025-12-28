@@ -5,8 +5,11 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme-provider"
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
+import UserMenu from "@/components/user-menu";
 import RequestToolModal from "@/components/RequestToolModal";
 import { ToolsSidebar } from "@/components/tools-sidebar"
+import { AuthProvider } from "@/providers/AuthProvider"
+
 import "./globals.css"
 import { ThemeToggle } from "@/components/theme-toggle"
 import MobileHeader from "@/components/mobile-header"
@@ -43,14 +46,13 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
+            <AuthProvider>
           {/* Mobile Header */}
           <MobileHeader />
 
 
           {/* Desktop Theme Toggle */}
-          <div className="fixed top-4 right-8 z-50 hidden md:block">
-            <ThemeToggle />
-          </div>
+          <UserMenu />
 
           {/* Sidebar Layout */}
           <SidebarProvider>
@@ -61,6 +63,7 @@ export default function RootLayout({
               {children}
             </SidebarInset>
           </SidebarProvider>
+          </AuthProvider>
         </ThemeProvider>
 
         <Analytics />
