@@ -18,9 +18,9 @@ export default function PlansPage() {
   return (
     <main className="min-h-screen bg-background text-foreground">
       {/* HEADER */}
-      <section className="max-w-7xl mx-auto px-6 pt-16 pb-20 text-center">
+      <section className="max-w-7xl mx-auto px-6 pb-20 text-center">
 
-        <div className="flex justify-start">
+        <div className="flex pt-4 md:pt-0 pb-4 justify-start">
           <button
             onClick={() => router.back()}
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition"
@@ -115,7 +115,7 @@ export default function PlansPage() {
 
             <Link
               href="#"
-              className="mt-8 block w-full rounded-xl border border-border px-4 py-3 text-center text-sm hover:bg-muted transition"
+              className="mt-8 block w-full rounded-xl border border-border px-4 py-3 text-center text-sm font-medium hover:bg-muted transition"
             >
               Get 3-Day Pass
             </Link>

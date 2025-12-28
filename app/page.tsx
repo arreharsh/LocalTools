@@ -60,17 +60,17 @@ export default function HomePage() {
         >
           <Link
             href="/tools"
-            className="inline-flex items-center gap-2 rounded-xl bg-accent px-6 py-3 text-sm font-medium text-accent-foreground hover:opacity-90 transition"
+            className="inline-flex shadow-md  items-center gap-2 rounded-xl bg-accent px-6 py-3 text-sm font-medium text-accent-foreground hover:opacity-90 transition"
           >
             Explore Tools
             <ArrowRight className="w-4 h-4" />
           </Link>
 
           <Link
-            href="/tools/json-formatter"
+            href="/tools/invoice-generator"
             className="inline-flex items-center gap-2 rounded-xl border border-border px-6 py-3 text-sm font-medium hover:bg-muted transition"
           >
-            Try JSON Formatter
+            Try Invoice Generator
           </Link>
         </motion.div>
       </section>

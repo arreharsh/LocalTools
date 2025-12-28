@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Search, Sparkles, X } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
-
+import RequestToolModal from "@/components/RequestToolModal";
 
 const PLACEHOLDERS = [
   "PDF Merge",
@@ -17,6 +17,8 @@ const PLACEHOLDERS = [
 
 export default function MobileHeader() {
   const router = useRouter();
+
+  const [openRequest, setOpenRequest] = useState(false);
 
   /* scroll hide */
   const lastScroll = useRef(0);
@@ -53,9 +55,6 @@ export default function MobileHeader() {
     setMenuOpen(false);
   }, [router]);
 
-
-
-
   return (
     <>
       {/* HEADER */}
@@ -70,7 +69,10 @@ export default function MobileHeader() {
       >
         <div className="flex items-center justify-between px-4 py-3">
           {/* LOGO */}
-          <button onClick={() => router.push("/")} className="flex font-bold text-lg items-center gap-2">
+          <button
+            onClick={() => router.push("/")}
+            className="flex font-bold text-lg items-center gap-2"
+          >
             <Image src="/logo.png" alt="Logo" width={26} height={26} />
             LocalTools
           </button>
@@ -104,7 +106,13 @@ export default function MobileHeader() {
               {menuOpen ? (
                 <X size={22} />
               ) : (
-                <Image src="/menu.png" alt="Menu" width={24} height={24} className="dark:invert"/>
+                <Image
+                  src="/menu.png"
+                  alt="Menu"
+                  width={24}
+                  height={24}
+                  className="dark:invert"
+                />
               )}
             </button>
           </div>
@@ -161,7 +169,7 @@ export default function MobileHeader() {
             </button>
 
             <button
-              onClick={() => router.push("/contact")}
+              onClick={() => setOpenRequest(true)}
               className="w-full px-3 py-2 rounded-md border border-border text-left font-semibold text-sm "
             >
               Request a Tool
@@ -175,6 +183,10 @@ export default function MobileHeader() {
           </div>
         </div>
       </div>
+      <RequestToolModal
+        open={openRequest}
+        onClose={() => setOpenRequest(false)}
+      />
     </>
   );
 }

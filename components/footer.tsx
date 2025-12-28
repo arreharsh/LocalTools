@@ -8,8 +8,8 @@ export function Footer() {
  <footer className="border-t border-border">
   <div className="max-w-7xl mx-auto px-6 py-10 relative">
     {/* CENTER TEXT */}
-    <div className="text-center text-sm text-muted-foreground">
-      Privacy focused • No tracking • No ads <span className="p-2">Created with ♥ to help others</span>
+    <div className="text-center pb-2 text-sm text-muted-foreground">
+      <span className="p-2">Created with ♥ to help others</span>
     </div>
 
     {/* BOTTOM RIGHT LINKS */}
@@ -31,10 +31,10 @@ export function Footer() {
       </Link>
       <span className="opacity-40">•</span>
       <Link
-        href="/plans"
+        href="/pricing"
         className="hover:text-foreground underline transition"
       >
-        Plans
+        Pricing
       </Link>
     </div>
   </div>

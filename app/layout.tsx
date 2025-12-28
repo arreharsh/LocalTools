@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme-provider"
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
+import RequestToolModal from "@/components/RequestToolModal";
 import { ToolsSidebar } from "@/components/tools-sidebar"
 import "./globals.css"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -12,6 +13,7 @@ import MobileHeader from "@/components/mobile-header"
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
+
 
 export const metadata: Metadata = {
   title: "LocalTools - Privacy Focused No-Tracking No-Ads",
@@ -43,6 +45,7 @@ export default function RootLayout({
         >
           {/* Mobile Header */}
           <MobileHeader />
+
 
           {/* Desktop Theme Toggle */}
           <div className="fixed top-4 right-8 z-50 hidden md:block">

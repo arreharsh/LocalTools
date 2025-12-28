@@ -49,6 +49,16 @@ export const toolCategories: ToolCategory[] = [
         category: "pdf",
       },
       {
+
+        id: "invoiceGenerator",
+        slug: "invoice-generator",
+        name: "Invoice Generator",
+        icon: FileText,
+        category: "pdf",
+        isNew: true,
+        
+      },
+      {
         id: "pdfPageReorder",
         slug: "pdf-page-reorder",
         name: "PDF Page Reorder",
