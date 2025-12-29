@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 import { useAuth } from "@/providers/AuthProvider";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase/client";
 import { ThemeToggle } from "@/components/theme-toggle";
+import  UserMenuSkeleton  from "@/components/skeletons/UserMenuSkeleton";
+
+
 import {
   ChevronDown,
   LogOut,
@@ -11,11 +14,24 @@ import {
   User,
 } from "lucide-react";
 
+/* =========================
+   Skeleton
+========================= */
+
+
+/* =========================
+   User Menu
+========================= */
+
 export default function UserMenu() {
   const { user, loading } = useAuth();
   const [open, setOpen] = useState(false);
 
-  if (loading || !user) return null;
+  /* --- Skeleton while auth resolving --- */
+  if (loading) return <UserMenuSkeleton />;
+
+  /* --- Logged out: hide menu but keep layout stable --- */
+  if (!user) return null;
 
   const name =
     user.user_metadata?.full_name ||
@@ -25,10 +41,9 @@ export default function UserMenu() {
   const initial = name.charAt(0).toUpperCase();
 
   return (
-    <div className="fixed hidden lg:flex top-4 right-6 z-50 flex items-start gap-2">
-      
+    <div className="fixed hidden lg:flex top-4 right-6 z-50 items-start gap-2">
       {/* User container */}
-      <div className="flex flex-col rounded-xl border backdrop-blur-md shadow-sm overflow-hidden min-w-[180px]">
+      <div className="flex flex-col rounded-xl border backdrop-blur-md shadow-sm overflow-hidden min-w-[180px] bg-gradient-to-br from-foreground/3 to-transparent">
         {/* Header */}
         <button
           onClick={() => setOpen((v) => !v)}
@@ -53,7 +68,6 @@ export default function UserMenu() {
             }`}
           />
         </button>
-        
 
         {/* Expandable section */}
         {open && (
@@ -88,9 +102,9 @@ export default function UserMenu() {
           </div>
         )}
       </div>
+
       {/* Theme toggle */}
       <ThemeToggle />
-
     </div>
   );
 }

@@ -13,7 +13,7 @@ import {
 import { ThemeToggle } from "@/components/theme-toggle";
 import RequestToolModal from "@/components/RequestToolModal";
 import { useAuth, useAuthModal } from "@/providers/AuthProvider";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase/server";
 
 const PLACEHOLDERS = [
   "PDF Merge",

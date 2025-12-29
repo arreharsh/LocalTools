@@ -1,18 +1,25 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import type { User } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase/client";
 import AuthModal from "@/components/AuthModal";
 
 /* =========================
    Auth Context
 ========================= */
 
-const AuthContext = createContext<{
+type AuthContextType = {
   user: User | null;
   loading: boolean;
-}>({
+};
+
+const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
 });
@@ -31,31 +38,50 @@ const AuthModalContext = createContext<{
    Provider
 ========================= */
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   /* --- Session bootstrap + listener --- */
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setUser(data.session?.user ?? null);
-      setLoading(false);
-    });
+    let mounted = true;
+
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (!mounted) return;
+        setUser(data.session?.user ?? null);
+        setLoading(false);
+      });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        if (!mounted) return;
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
-  /* --- Lock body scroll when modal open (UX polish) --- */
+  /* --- Lock body scroll when modal open --- */
   useEffect(() => {
-    document.body.style.overflow = isModalOpen ? "hidden" : "";
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
     return () => {
       document.body.style.overflow = "";
     };

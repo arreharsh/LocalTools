@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase/server";
 import { useAuth } from "@/providers/AuthProvider";
 
 type Props = {
