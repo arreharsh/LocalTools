@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
 import AuthModal from "@/components/AuthModal";
@@ -38,11 +33,7 @@ const AuthModalContext = createContext<{
    Provider
 ========================= */
 
-export function AuthProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -51,23 +42,26 @@ export function AuthProvider({
   useEffect(() => {
     let mounted = true;
 
-    supabase.auth
-      .getSession()
-      .then(({ data }) => {
-        if (!mounted) return;
-        setUser(data.session?.user ?? null);
-        setLoading(false);
-      });
+    supabase.auth.getSession().then(({ data }) => {
+      if (!mounted) return;
+
+      setUser(data.session?.user ?? null);
+      setLoading(false);
+    });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        if (!mounted) return;
-        setUser(session?.user ?? null);
-        setLoading(false);
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!mounted) return;
+
+      // 🔥 CLEAR guest usage on successful login
+      if (event === "SIGNED_IN") {
+        localStorage.removeItem("guest_usage");
       }
-    );
+
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
 
     return () => {
       mounted = false;
@@ -89,16 +83,11 @@ export function AuthProvider({
 
   return (
     <AuthContext.Provider value={{ user, loading }}>
-      <AuthModalContext.Provider
-        value={{ open: () => setIsModalOpen(true) }}
-      >
+      <AuthModalContext.Provider value={{ open: () => setIsModalOpen(true) }}>
         {children}
 
         {/* Global Auth Modal */}
-        <AuthModal
-          open={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-        />
+        <AuthModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </AuthModalContext.Provider>
     </AuthContext.Provider>
   );

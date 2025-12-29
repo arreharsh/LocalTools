@@ -4,6 +4,9 @@ import { useState } from "react";
 import { PDFDocument } from "pdf-lib";
 import { GripVertical, Trash2, FileText } from "lucide-react";
 import HowToUse from "@/components/tool/HowToUse";
+import { runToolWithGuard } from "@/lib/runToolWithGuard";
+import { useAuthModal } from "@/providers/AuthProvider";
+
 
 type PdfFile = {
   file: File;
@@ -14,6 +17,8 @@ export default function PdfMerge() {
   const [files, setFiles] = useState<PdfFile[]>([]);
   const [loading, setLoading] = useState(false);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const { open } = useAuthModal();
+
 
   const generateId = () =>
     `${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -29,6 +34,11 @@ export default function PdfMerge() {
 
     setFiles((prev) => [...prev, ...pdfs]);
   };
+
+  const handleMergePdfs = () => {
+  runToolWithGuard(mergePdfs, open);
+ };
+
 
   const removeFile = (id: string) => {
     setFiles((prev) => prev.filter((f) => f.id !== id));
@@ -170,7 +180,7 @@ export default function PdfMerge() {
         {/* Actions */}
         <div className="flex gap-2">
           <button
-            onClick={mergePdfs}
+            onClick={handleMergePdfs}
             disabled={files.length < 2 || loading}
             className="px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm disabled:opacity-50"
           >

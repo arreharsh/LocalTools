@@ -6,9 +6,14 @@ import HowToUse from "@/components/tool/HowToUse";
 // @ts-ignore
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 // @ts-ignore
-import {oneDark,oneLight,} from "react-syntax-highlighter/dist/esm/styles/prism";
+import {
+  oneDark,
+  oneLight, //@ts-ignore
+} from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useTheme } from "next-themes";
 import BackBtn from "@/components/ui/backbtn";
+import { runToolWithGuard } from "@/lib/runToolWithGuard";
+import { useAuthModal } from "@/providers/AuthProvider";
 import {
   Select,
   SelectContent,
@@ -22,9 +27,11 @@ type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 type Tab = "headers" | "body";
 
 const METHODS: Method[] = ["GET", "POST", "PUT", "PATCH", "DELETE"];
+
 /* ---------------- PAGE ---------------- */
 export default function ApiResponseViewer() {
   const { theme } = useTheme();
+  const { open } = useAuthModal(); // ✅ auth modal hook
 
   const [url, setUrl] = useState(
     "https://jsonplaceholder.typicode.com/posts/1"
@@ -48,14 +55,13 @@ export default function ApiResponseViewer() {
   const [status, setStatus] = useState<number | null>(null);
   const [time, setTime] = useState<number | null>(null);
 
-  /* ---------------- SEND REQUEST ---------------- */
+  /* ---------------- REAL TOOL LOGIC ---------------- */
   const sendRequest = async () => {
     setError(null);
     setResponseBody(null);
     setStatus(null);
     setTime(null);
 
-    // parse headers
     let parsedHeaders: Record<string, string> = {};
     try {
       parsedHeaders = headers ? JSON.parse(headers) : {};
@@ -64,7 +70,6 @@ export default function ApiResponseViewer() {
       return;
     }
 
-    // parse body (non-GET)
     let parsedBody: any = undefined;
     if (method !== "GET") {
       try {
@@ -102,6 +107,12 @@ export default function ApiResponseViewer() {
       setLoading(false);
     }
   };
+
+  /* ---------------- GUARDED HANDLER ---------------- */
+  const handleSendRequest = () => {
+    runToolWithGuard(sendRequest, open);
+  };
+
 
   /* ---------------- UI ---------------- */
   return (
@@ -151,7 +162,7 @@ export default function ApiResponseViewer() {
           />
 
           <button
-            onClick={sendRequest}
+            onClick={handleSendRequest}
             disabled={loading}
             className="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm hover:opacity-90"
           >

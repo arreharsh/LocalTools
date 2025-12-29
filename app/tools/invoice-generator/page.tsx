@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { Download, Plus, Trash2, AlertCircle, Palette } from "lucide-react";
+import { runToolWithGuard } from "@/lib/runToolWithGuard";
+import { useAuthModal } from "@/providers/AuthProvider";
+
 import {
   Select,
   SelectTrigger,
@@ -65,6 +68,7 @@ export default function InvoiceGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [invoiceNo, setInvoiceNo] = useState("INV-LT001");
   const [invoiceDate, setInvoiceDate] = useState("");
+  const { open } = useAuthModal();
   const [dueDate, setDueDate] = useState("");
   const [fromInfo, setFromInfo] = useState<Company>({
     name: "",
@@ -119,6 +123,11 @@ export default function InvoiceGenerator() {
     setErrors(errs);
     return errs.length === 0;
   };
+
+  const handleGeneratePDF = () => {
+  runToolWithGuard(generatePDF, open);
+};
+
 
   const generatePDF = async () => {
     if (!validate()) return;
@@ -667,7 +676,7 @@ export default function InvoiceGenerator() {
           {/* Download */}
           <div className="flex items-center justify-start gap-4 pt-6">
             <button
-              onClick={generatePDF}
+              onClick={handleGeneratePDF}
               disabled={isGenerating}
               className="inline-flex items-center gap-3 shadow bg-accent hover:bg-accent-dark disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-bold text-base py-3 px-4 rounded-md transition-colors"
             >

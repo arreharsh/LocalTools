@@ -18,10 +18,11 @@ export interface Tool {
   name: string
   icon: any
   category: string
-  isPro?: boolean
+  access?: "free" | "limited" | "pro"
   isNew?: boolean
   isComingSoon?: boolean
 }
+
 
 export interface ToolCategory {
   id: string
@@ -47,6 +48,7 @@ export const toolCategories: ToolCategory[] = [
         name: "PDF Merge",
         icon: Combine,
         category: "pdf",
+        access: "limited",
       },
       {
 
@@ -56,6 +58,7 @@ export const toolCategories: ToolCategory[] = [
         icon: FileText,
         category: "pdf",
         isNew: true,
+        access: "limited",
         
       },
       {
@@ -64,7 +67,7 @@ export const toolCategories: ToolCategory[] = [
         name: "PDF Page Reorder",
         icon: FileEdit,
         category: "pdf",
-        isPro: true,
+        access: "limited",
       },
       {
         id: "pdfSplit",
@@ -72,6 +75,7 @@ export const toolCategories: ToolCategory[] = [
         name: "PDF Split",
         icon: Scissors,
         category: "pdf",
+        access: "free",
       },
       {
         id:"imgToPdf",
@@ -79,6 +83,7 @@ export const toolCategories: ToolCategory[] = [
         name: "Image to PDF",
         icon: FileText,
         category: "pdf",
+        access: "free",
       },
       {
         id: "pdfCompress",
@@ -86,6 +91,7 @@ export const toolCategories: ToolCategory[] = [
         name: "PDF Compress",
         icon: Gauge,
         category: "pdf",
+        access: "limited",
       },
       {
         id: "pdfEditor",
@@ -94,6 +100,7 @@ export const toolCategories: ToolCategory[] = [
         icon: FileEdit,
         category: "pdf",
         isComingSoon: true,
+        access: "pro",
       },
     ],
   },
@@ -110,6 +117,7 @@ export const toolCategories: ToolCategory[] = [
         icon: Braces,
         category: "json",
         isNew: true,
+        access: "free",
       },
     ],
   },
@@ -125,6 +133,7 @@ export const toolCategories: ToolCategory[] = [
         name: "API Response Viewer",
         icon: Code,
         category: "dev",
+        access: "limited",
       },
       {
         id: "curlViewer",
@@ -133,6 +142,7 @@ export const toolCategories: ToolCategory[] = [
         icon: Link,
         category: "dev",
         isNew: true,
+        access: "limited",
       },
       {
         id: "jwtDecoder",
@@ -140,7 +150,7 @@ export const toolCategories: ToolCategory[] = [
         name: "JWT Decoder",
         icon: ShieldCheck,
         category: "dev",
-        isPro: true,
+        access: "free",
       },
       {
         id: "regexTester",
@@ -148,6 +158,7 @@ export const toolCategories: ToolCategory[] = [
         name: "Regex Tester",
         icon: Regex,
         category: "dev",
+        access: "free",
       },
       {
         id: "urlTools",
@@ -155,6 +166,7 @@ export const toolCategories: ToolCategory[] = [
         name: "URL Encode / Decode",
         icon: Link,
         category: "dev",
+        access: "free",
       },
     ],
   },
@@ -169,6 +181,7 @@ export const toolCategories: ToolCategory[] = [
         name: "Text Cleaner",
         icon: Type,
         category: "text",
+        access: "free",
       },
     ],
   },

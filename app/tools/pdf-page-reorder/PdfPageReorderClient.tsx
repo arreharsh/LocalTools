@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { PDFDocument, degrees } from "pdf-lib";
 import HowToUse from "@/components/tool/HowToUse";
+import { runToolWithGuard } from "@/lib/runToolWithGuard";
+import { useAuthModal } from "@/providers/AuthProvider";
+
 
 /* PDF.js */
 import * as pdfjsLib from "pdfjs-dist";
@@ -148,6 +151,8 @@ export default function PdfPageReorder() {
   const [pages, setPages] = useState<PageItem[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
+  const { open } = useAuthModal();
+
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -183,6 +188,11 @@ export default function PdfPageReorder() {
       }))
     );
   };
+
+  const handleApplyChanges = () => {
+  runToolWithGuard(applyChanges, open);
+ };
+
 
   /* ---------- PAGE ACTIONS ---------- */
   const rotatePage = (i: number) => {
@@ -367,7 +377,7 @@ export default function PdfPageReorder() {
 
       {pages.length > 0 && (
         <button
-          onClick={applyChanges}
+          onClick={handleApplyChanges}
           disabled={loading}
           className="mt-6 inline-flex items-center gap-2 px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm"
         >

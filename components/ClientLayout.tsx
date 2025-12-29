@@ -7,6 +7,7 @@ import MobileHeader from "@/components/mobile-header";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { ToolsSidebar } from "@/components/tools-sidebar";
 
+
 export default function ClientLayout({
   children,
 }: {
@@ -24,7 +25,7 @@ export default function ClientLayout({
         <UserMenu />
 
         <SidebarProvider>
-            {/* @ts-expect-error Server Component */}
+          {/* @ts-expect-error Server Component */}
           <ToolsSidebar />
           <SidebarInset className="min-h-screen overflow-y-auto pt-18">
             {children}

@@ -135,7 +135,7 @@ export function ToolsSidebar({
                                 {tool.name}
                               </span>
 
-                              {tool.isPro && (
+                              {tool.access === "pro" && (
                                 <Badge
                                   variant="secondary"
                                   className="ml-auto shrink-0 text-[10px] px-1.5 py-0 h-4 bg-primary/10 text-primary border-primary/20 group-data-[collapsible=icon]:hidden"

@@ -11,6 +11,9 @@ import {
 } from "@/components/ui/select";
 import HowToUse from "@/components/tool/HowToUse";
 
+import { runToolWithGuard } from "@/lib/runToolWithGuard";
+import { useAuthModal } from "@/providers/AuthProvider";
+
 /* DND KIT */
 import {
   DndContext,
@@ -84,6 +87,7 @@ function SortableImage({
 }
 
 export default function ImagesToPdf() {
+  const { open } = useAuthModal(); // ✅ auth modal
   const [images, setImages] = useState<ImgItem[]>([]);
   const [pageSize, setPageSize] = useState<"fit" | "a4">("fit");
   const [orientation, setOrientation] = useState<
@@ -115,6 +119,7 @@ export default function ImagesToPdf() {
     setImages((prev) => prev.filter((_, idx) => idx !== i));
   };
 
+  /* ---------------- REAL TOOL LOGIC ---------------- */
   const createPdf = async () => {
     if (images.length === 0) return;
     setLoading(true);
@@ -175,6 +180,11 @@ export default function ImagesToPdf() {
 
     URL.revokeObjectURL(url);
     setLoading(false);
+  };
+
+  /* ---------------- GUARDED HANDLER ---------------- */
+  const handleCreatePdf = () => {
+    runToolWithGuard(createPdf, open);
   };
 
   return (
@@ -278,7 +288,7 @@ export default function ImagesToPdf() {
         {/* Action */}
         {images.length > 0 && (
           <button
-            onClick={createPdf}
+            onClick={handleCreatePdf}
             disabled={loading}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm"
           >

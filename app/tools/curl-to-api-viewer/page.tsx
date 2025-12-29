@@ -18,10 +18,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+import { runToolWithGuard } from "@/lib/runToolWithGuard";
+import { useAuthModal } from "@/providers/AuthProvider";
+
 type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 export default function CurlToApiViewerV2() {
   const { theme } = useTheme();
+  const { open } = useAuthModal(); // ✅ auth modal
 
   const METHODS: Method[] = ["GET", "POST", "PUT", "PATCH", "DELETE"];
 
@@ -76,7 +80,7 @@ export default function CurlToApiViewerV2() {
     }
   };
 
-  /* ---------------- RUN REQUEST ---------------- */
+  /* ---------------- REAL TOOL LOGIC ---------------- */
   const runRequest = async () => {
     setError(null);
     setResponse(null);
@@ -117,6 +121,11 @@ export default function CurlToApiViewerV2() {
     } finally {
       setLoading(false);
     }
+  };
+
+  /* ---------------- GUARDED HANDLER ---------------- */
+  const handleRunRequest = () => {
+    runToolWithGuard(runRequest, open);
   };
 
   /* ---------------- CODE GENERATORS ---------------- */
@@ -236,7 +245,7 @@ print(response.text)`,
         />
 
         <button
-          onClick={runRequest}
+          onClick={handleRunRequest}
           disabled={loading}
           className="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm hover:opacity-90"
         >
