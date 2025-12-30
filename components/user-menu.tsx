@@ -4,62 +4,54 @@ import { useState } from "react";
 import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase/client";
 import { ThemeToggle } from "@/components/theme-toggle";
-import  UserMenuSkeleton  from "@/components/skeletons/UserMenuSkeleton";
+import UserMenuSkeleton from "@/components/skeletons/UserMenuSkeleton";
+
+import { ChevronDown, LogOut, Sparkles, User } from "lucide-react";
 
 
-import {
-  ChevronDown,
-  LogOut,
-  Sparkles,
-  User,
-} from "lucide-react";
-
-/* =========================
-   Skeleton
-========================= */
-
-
-/* =========================
-   User Menu
-========================= */
 
 export default function UserMenu() {
-  const { user, loading } = useAuth();
+  const { user, isPro, plan, loading } = useAuth();
   const [open, setOpen] = useState(false);
 
   /* --- Skeleton while auth resolving --- */
   if (loading) return <UserMenuSkeleton />;
 
-  /* --- Logged out: hide menu but keep layout stable --- */
+  /* --- Logged out: hide menu --- */
   if (!user) return null;
 
   const name =
-    user.user_metadata?.full_name ||
-    user.user_metadata?.name ||
-    "User";
+    user.user_metadata?.full_name || user.user_metadata?.name || "User";
 
   const initial = name.charAt(0).toUpperCase();
 
   return (
-    <div className="fixed hidden lg:flex top-4 right-6 z-50 items-start gap-2">
+    <div className="fixed hidden lg:flex top-4 right-6 z-50 items-start ">
       {/* User container */}
-      <div className="flex flex-col rounded-xl border backdrop-blur-md shadow-sm overflow-hidden min-w-[180px] bg-gradient-to-br from-foreground/3 to-transparent">
+      <div className={`flex flex-col  border backdrop-blur-md shadow-sm overflow-hidden 
+       min-w-[180px] bg-gradient-to-br from-foreground/3 to-transparent rounded-xl `}>
+
         {/* Header */}
+        <div className="flex gap-2 items-center p-0">
         <button
-          onClick={() => setOpen((v) => !v)}
-          className="flex items-center gap-2 px-3 py-2 hover:bg-muted transition"
+          onClick={() => setOpen((v) => !v)} 
+          className={`flex items-center gap-2 px-3 py-1 hover:bg-muted transition border-r `}
         >
           <div className="flex size-8 items-center justify-center rounded-full bg-primary/15 text-primary font-semibold">
             {initial}
           </div>
 
           <div className="flex-1 text-left min-w-0">
-            <p className="text-sm font-medium truncate">
-              {name}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Free plan
-            </p>
+            <p className="text-sm font-medium truncate">{name}</p>
+
+            {/* PLAN LABEL */}
+            {plan === null ? (
+              <span className="text-xs text-muted-foreground">Loading…</span>
+            ) : (
+              <span className="text-xs bg-primary/10 text-primary px-2 mb-0.5 border border-primary/50 rounded-md">
+                {isPro ? "Pro" : "Free"}
+              </span>
+            )}
           </div>
 
           <ChevronDown
@@ -67,23 +59,39 @@ export default function UserMenu() {
               open ? "rotate-180" : ""
             }`}
           />
+        
+         
         </button>
+        <span className=""><ThemeToggle /></span>
+        </div>
+
 
         {/* Expandable section */}
         {open && (
           <div className="flex flex-col border-t">
-            {/* Upgrade */}
-            <button
-              className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition"
-            >
-              <Sparkles className="size-4 text-yellow-500" />
-              Upgrade to Pro
-            </button>
+            {/* Upgrade (only for FREE users) */}
+            {!isPro && (
+              <button
+                className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition"
+                onClick={() => {
+                  alert("Upgrade flow coming soon 🚀");
+                }}
+              >
+                <Sparkles className="size-4 text-yellow-500" />
+                Upgrade to Pro
+              </button>
+            )}
+
+            {/* Pro badge (read-only) */}
+            {isPro && (
+              <div className="flex items-center gap-2 px-3 py-2 text-sm text-yellow-600">
+                <Sparkles className="size-4" />
+                Pro member
+              </div>
+            )}
 
             {/* Profile */}
-            <button
-              className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition"
-            >
+            <button className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition">
               <User className="size-4 opacity-70" />
               Profile
             </button>
@@ -101,10 +109,10 @@ export default function UserMenu() {
             </button>
           </div>
         )}
+        
       </div>
 
-      {/* Theme toggle */}
-      <ThemeToggle />
+      
     </div>
   );
 }

@@ -37,7 +37,7 @@ export function ToolsSidebar({
   const { state, toggleSidebar } = useSidebar();
   const [query, setQuery] = useState("");
 
-  const { user, loading } = useAuth();
+  const { user, loading, isPro, plan } = useAuth();
   const { open } = useAuthModal();
 
   const filteredCategories = useMemo(() => {
@@ -241,11 +241,17 @@ export function ToolsSidebar({
             </div>
 
             {/* Name */}
-            <div className="min-w-0">
+            <div className="min-w-0 group-data-[collapsible=icon]:hidden">
               <p className="text-sm font-medium truncate leading-tight">
                 {user.user_metadata?.full_name || user.email?.split("@")[0]}
               </p>
-              <p className="text-xs text-muted-foreground">Free plan</p>
+              {plan === null ? (
+              <span className="text-xs text-muted-foreground">Loading…</span>
+            ) : (
+              <span className="text-xs bg-primary/10 text-primary px-2 mb-0.5 border border-primary/50 rounded-md">
+                {isPro ? "Pro" : "Free "}
+              </span>
+            )}
             </div>
           </div>
         </SidebarFooter>
