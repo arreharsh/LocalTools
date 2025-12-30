@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { Download, Plus, Trash2, AlertCircle, Palette } from "lucide-react";
-import { runToolWithGuard } from "@/lib/runToolWithGuard";
 import { useAuthModal } from "@/providers/AuthProvider";
 
 import {
@@ -100,7 +99,7 @@ export default function InvoiceGenerator() {
     setDueDate(due);
   }, []);
 
-  // Calculations
+  // Calculations (real-time update ke liye useMemo use kiya)
   const subtotal = items.reduce(
     (s, i) => s + (Number(i.qty) || 0) * (Number(i.rate) || 0),
     0
@@ -123,11 +122,6 @@ export default function InvoiceGenerator() {
     setErrors(errs);
     return errs.length === 0;
   };
-
-  const handleGeneratePDF = () => {
-  runToolWithGuard(generatePDF, open);
-};
-
 
   const generatePDF = async () => {
     if (!validate()) return;
@@ -235,7 +229,6 @@ export default function InvoiceGenerator() {
         `${currencyDisplay} ${formatINR(item.qty * item.rate)}`,
       ]);
 
-      // ===== TABLE (FINAL LOCKED SETTINGS) =====
       autoTable(doc, {
         startY: 115,
         margin: { left: 20, right: 20 },
@@ -244,7 +237,6 @@ export default function InvoiceGenerator() {
         body: tableData,
         theme: "plain",
 
-        // ===== STYLES (FINAL LOCKED STYLES) =====
         headStyles: {
           fillColor: bgColor,
           textColor: [0, 0, 0],
@@ -258,24 +250,21 @@ export default function InvoiceGenerator() {
           cellPadding: { top: 6, bottom: 6, left: 6, right: 6 },
         },
 
-        // ==== GRID LINES =====
         styles: {
           lineColor: [226, 232, 240],
           lineWidth: 0.25,
         },
 
-        // ===== COLUMN WIDTHS (FINAL LOCKED WIDTHS) =====
         columnStyles: {
-          0: { cellWidth: 80, halign: "left" }, // Description
-          1: { cellWidth: 20, halign: "center" }, // Qty
-          2: { cellWidth: 35, halign: "right" }, // Rate
-          3: { cellWidth: 35, halign: "right" }, // Amount
+          0: { cellWidth: 80, halign: "left" },
+          1: { cellWidth: 20, halign: "center" },
+          2: { cellWidth: 35, halign: "right" },
+          3: { cellWidth: 35, halign: "right" },
         },
       });
 
-      // ===== TOTALS (FINAL LOCKED ALIGNMENT) =====
       const finalY = (doc as any).lastAutoTable.finalY + 16;
-      const totalsX = 124; // 🔒 aligned with table right block
+      const totalsX = 124;
 
       doc.setFontSize(10);
       doc.setFont("helvetica", "normal");
@@ -302,7 +291,6 @@ export default function InvoiceGenerator() {
         align: "right",
       });
 
-      // ===== GRAND TOTAL =====
       const totalY = discount > 0 ? finalY + 18 : finalY + 12;
       doc.setLineWidth(0.5);
       doc.setDrawColor(...primaryColor);
@@ -316,7 +304,6 @@ export default function InvoiceGenerator() {
         align: "right",
       });
 
-      // ===== NOTES (WIDTH LOCKED) =====
       if (notes.trim()) {
         const notesY = totalY + 22;
         doc.setFontSize(9);
@@ -326,12 +313,43 @@ export default function InvoiceGenerator() {
 
         doc.setFont("helvetica", "normal");
         doc.setTextColor(85, 85, 85);
-        const notesLines = doc.splitTextToSize(notes, 160); // 🔒 no edge touch
+        const notesLines = doc.splitTextToSize(notes, 160);
         doc.text(notesLines, 20, notesY + 5);
       }
-      // Save PDF
 
       doc.save(`${invoiceNo}.pdf`);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleGeneratePDF = async () => {
+    setIsGenerating(true);
+
+    try {
+      // 🔒 RPC usage guard
+      const res = await fetch("/api/run-tool", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.allowed) {
+        if (data.reason === "IP_UNAVAILABLE" || data.plan === "guest") {
+          alert("Guest limit reached. Please log in to continue.");
+          open();
+        } else {
+          alert("Daily limit reached. Upgrade to Pro for unlimited access.");
+        }
+        return;
+      }
+
+      // ✅ allowed → ORIGINAL PDF GENERATION LOGIC
+      await generatePDF();
+    } catch (err: any) {
+      console.error(err);
+      alert("Invoice generation failed: " + (err.message || "Unknown error"));
     } finally {
       setIsGenerating(false);
     }
@@ -353,7 +371,10 @@ export default function InvoiceGenerator() {
         i.id === id
           ? {
               ...i,
-              [field]: field === "description" ? value : Number(value) || 0,
+              [field]:
+                field === "description"
+                  ? value
+                  : Math.max(0, Number(value) || 0), // Safe number conversion
             }
           : i
       )
@@ -577,7 +598,9 @@ export default function InvoiceGenerator() {
                       </td>
                       <td className="py-2 px-3 text-right font-medium">
                         {currency === "INR" ? "INR" : currency}{" "}
-                        {formatINR(item.qty * item.rate)}
+                        {formatINR(
+                          (Number(item.qty) || 0) * (Number(item.rate) || 0)
+                        )}
                       </td>
                       <td className="py-2 px-3 text-center">
                         <button

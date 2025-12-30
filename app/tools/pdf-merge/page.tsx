@@ -4,9 +4,7 @@ import { useState } from "react";
 import { PDFDocument } from "pdf-lib";
 import { GripVertical, Trash2, FileText } from "lucide-react";
 import HowToUse from "@/components/tool/HowToUse";
-import { runToolWithGuard } from "@/lib/runToolWithGuard";
 import { useAuthModal } from "@/providers/AuthProvider";
-
 
 type PdfFile = {
   file: File;
@@ -18,7 +16,6 @@ export default function PdfMerge() {
   const [loading, setLoading] = useState(false);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const { open } = useAuthModal();
-
 
   const generateId = () =>
     `${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -35,10 +32,40 @@ export default function PdfMerge() {
     setFiles((prev) => [...prev, ...pdfs]);
   };
 
-  const handleMergePdfs = () => {
-  runToolWithGuard(mergePdfs, open);
- };
+  /* ---------------- RPC GUARDED HANDLER ---------------- */
+  const handleMergePdfs = async () => {
+    if (files.length < 2) return;
 
+    setLoading(true);
+
+    try {
+      // 🔒 1. RPC usage guard
+      const res = await fetch("/api/run-tool", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.allowed) {
+        if (data.reason === "IP_UNAVAILABLE" || data.plan === "guest") {
+          alert("Guest limit reached. Please log in to continue.");
+          open();
+        } else {
+          alert("Daily limit reached. Upgrade to Pro for unlimited access.");
+        }
+        return;
+      }
+
+      // ✅ 2. Allowed → ORIGINAL MERGE LOGIC
+      await mergePdfs();
+    } catch (err: any) {
+      console.error(err);
+      alert("PDF merge failed: " + (err.message || "Unknown error"));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const removeFile = (id: string) => {
     setFiles((prev) => prev.filter((f) => f.id !== id));
@@ -67,10 +94,8 @@ export default function PdfMerge() {
     setDragIndex(null);
   };
 
+  /* ---------------- ORIGINAL PDF MERGE LOGIC ---------------- */
   const mergePdfs = async () => {
-    if (files.length < 2) return;
-
-    setLoading(true);
     const merged = await PDFDocument.create();
 
     for (const item of files) {
@@ -81,7 +106,9 @@ export default function PdfMerge() {
     }
 
     const mergedBytes = await merged.save();
-    const blob = new Blob([mergedBytes.slice(0)], { type: "application/pdf" });
+    const blob = new Blob([mergedBytes.slice(0)], {
+      type: "application/pdf",
+    });
     const url = URL.createObjectURL(blob);
 
     const a = document.createElement("a");
@@ -90,7 +117,6 @@ export default function PdfMerge() {
     a.click();
 
     URL.revokeObjectURL(url);
-    setLoading(false);
   };
 
   const clearAll = () => setFiles([]);
@@ -137,10 +163,7 @@ export default function PdfMerge() {
                   dragIndex === index ? "opacity-50" : ""
                 }`}
               >
-                <GripVertical
-                  className="text-muted-foreground"
-                  size={16}
-                />
+                <GripVertical size={16} />
 
                 <div className="flex-1 overflow-hidden">
                   <p className="truncate text-sm font-medium">
@@ -152,23 +175,13 @@ export default function PdfMerge() {
                 </div>
 
                 <div className="flex gap-1">
-                  <button
-                    onClick={() => move(index, index - 1)}
-                    className="px-2 text-sm text-muted-foreground hover:text-foreground"
-                  >
-                    ↑
-                  </button>
-                  <button
-                    onClick={() => move(index, index + 1)}
-                    className="px-2 text-sm text-muted-foreground hover:text-foreground"
-                  >
-                    ↓
-                  </button>
+                  <button onClick={() => move(index, index - 1)}>↑</button>
+                  <button onClick={() => move(index, index + 1)}>↓</button>
                 </div>
 
                 <button
                   onClick={() => removeFile(item.id)}
-                  className="p-1.5 rounded-md border border-border hover:bg-muted"
+                  className="p-1.5 rounded-md border"
                 >
                   <Trash2 size={14} />
                 </button>
@@ -190,25 +203,23 @@ export default function PdfMerge() {
           <button
             onClick={clearAll}
             disabled={files.length === 0}
-            className="px-4 py-2 rounded-md border border-border text-sm hover:bg-muted disabled:opacity-50"
+            className="px-4 py-2 rounded-md border text-sm disabled:opacity-50"
           >
             Clear
           </button>
         </div>
       </div>
+
       <HowToUse
-       className="mt-8"
+        className="mt-8"
         steps={[
-          "Click to upload multiple PDF files or drag & drop them into the upload area.",
-          "Reorder the files by dragging or using the up/down buttons to set the merge order.",
-          "Click 'Merge PDFs' to combine the selected files into a single PDF document.",
-          "Use the 'Clear' button to remove all uploaded files and start over.",
+          "Upload multiple PDF files.",
+          "Reorder them as needed.",
+          "Click Merge PDFs.",
+          "Download the merged file.",
         ]}
-        tip="This tool merges multiple PDF files entirely on the client side, ensuring your files remain private."
+        tip="All processing happens locally in your browser."
       />
     </div>
   );
 }
-
-
- 

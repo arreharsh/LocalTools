@@ -5,14 +5,13 @@ import { Play, Copy, Loader2, Globe, AlertTriangle } from "lucide-react";
 import HowToUse from "@/components/tool/HowToUse";
 // @ts-ignore
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-// @ts-ignore
+
 import {
   oneDark,
-  oneLight, //@ts-ignore
+  oneLight, // @ts-ignore
 } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useTheme } from "next-themes";
-import BackBtn from "@/components/ui/backbtn";
-import { runToolWithGuard } from "@/lib/runToolWithGuard";
+
 import { useAuthModal } from "@/providers/AuthProvider";
 import {
   Select,
@@ -31,7 +30,7 @@ const METHODS: Method[] = ["GET", "POST", "PUT", "PATCH", "DELETE"];
 /* ---------------- PAGE ---------------- */
 export default function ApiResponseViewer() {
   const { theme } = useTheme();
-  const { open } = useAuthModal(); // ✅ auth modal hook
+  const { open } = useAuthModal();
 
   const [url, setUrl] = useState(
     "https://jsonplaceholder.typicode.com/posts/1"
@@ -55,7 +54,7 @@ export default function ApiResponseViewer() {
   const [status, setStatus] = useState<number | null>(null);
   const [time, setTime] = useState<number | null>(null);
 
-  /* ---------------- REAL TOOL LOGIC ---------------- */
+  /* ---------------- REAL TOOL LOGIC (UNCHANGED) ---------------- */
   const sendRequest = async () => {
     setError(null);
     setResponseBody(null);
@@ -81,7 +80,6 @@ export default function ApiResponseViewer() {
     }
 
     try {
-      setLoading(true);
       const start = performance.now();
 
       const res = await fetch(url, {
@@ -103,18 +101,43 @@ export default function ApiResponseViewer() {
       }
     } catch {
       setError("Request failed. Possible CORS or network error.");
+    }
+  };
+
+  /* ---------------- RPC GUARDED HANDLER (FINAL) ---------------- */
+  const handleSendRequest = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/run-tool", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.allowed) {
+        if (data.reason === "IP_UNAVAILABLE" || data.plan === "guest") {
+          alert("Guest limit reached. Please log in to continue.");
+          open();
+        } else {
+          alert("Daily limit reached. Upgrade to Pro for unlimited access.");
+        }
+        return;
+      }
+
+      // ✅ counted & allowed → real tool runs
+      await sendRequest();
+    } catch (err: any) {
+      console.error(err);
+      setError("Request failed: " + (err.message || "Unknown error"));
     } finally {
       setLoading(false);
     }
   };
 
-  /* ---------------- GUARDED HANDLER ---------------- */
-  const handleSendRequest = () => {
-    runToolWithGuard(sendRequest, open);
-  };
-
-
-  /* ---------------- UI ---------------- */
+  /* ---------------- UI (BILKUL SAME) ---------------- */
   return (
     <div className="max-w-7xl xl:max-w-screen-2xl mx-auto px-4 py-4 space-y-8 no-scrollbar ">
       <div>
@@ -125,26 +148,19 @@ export default function ApiResponseViewer() {
         </p>
       </div>
 
-      {/* REQUEST SECTION */}
       <div className="rounded-xl border bg-card p-6 space-y-4 max-h-[70vh] overflow-hidden">
-        {/* URL + Method */}
         <div className="flex flex-col lg:flex-row gap-3">
           <Select
             value={method}
             onValueChange={(value) => {
               if (!METHODS.includes(value as Method)) return;
-
               setMethod(value as Method);
-
-              if (value === "GET") {
-                setActiveTab("headers");
-              }
+              if (value === "GET") setActiveTab("headers");
             }}
           >
             <SelectTrigger className="w-[140px]">
               <SelectValue />
             </SelectTrigger>
-
             <SelectContent>
               {METHODS.map((m) => (
                 <SelectItem key={m} value={m}>
@@ -175,7 +191,6 @@ export default function ApiResponseViewer() {
           </button>
         </div>
 
-        {/* TABS */}
         <div className="border-b flex gap-6 text-sm">
           <button
             onClick={() => setActiveTab("headers")}
@@ -202,7 +217,6 @@ export default function ApiResponseViewer() {
           )}
         </div>
 
-        {/* TAB CONTENT */}
         {activeTab === "headers" && (
           <div>
             <label className="text-sm font-medium">Headers (JSON)</label>
@@ -226,7 +240,6 @@ export default function ApiResponseViewer() {
         )}
       </div>
 
-      {/* ERROR */}
       {error && (
         <div className="rounded-xl border border-red-500/30 bg-red-500/5 px-5 py-4 flex items-center gap-2 text-red-500 text-sm">
           <AlertTriangle className="w-4 h-4" />
@@ -234,9 +247,7 @@ export default function ApiResponseViewer() {
         </div>
       )}
 
-      {/* RESPONSE */}
       <div className="rounded-xl border bg-card p-6">
-        {/* Response Header */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
           <div className="flex items-center gap-3 text-sm">
             <Globe className="w-4 h-4 text-primary" />
@@ -273,7 +284,6 @@ export default function ApiResponseViewer() {
           )}
         </div>
 
-        {/* RESPONSE BODY (LOCKED SIZE) */}
         <div className="relative h-[300px] w-full overflow-hidden rounded-md border bg-background">
           {!responseBody ? (
             <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm">
@@ -281,34 +291,29 @@ export default function ApiResponseViewer() {
             </div>
           ) : (
             <div className="absolute inset-0 overflow-auto">
-              <div className="min-w-0 max-w-full">
-                <SyntaxHighlighter
-                  language="json"
-                  wrapLongLines
-                  style={theme === "dark" ? oneDark : oneLight}
-                  customStyle={{
-                    margin: 0,
-                    background: "transparent",
-                    whiteSpace: "pre-wrap",
-                    wordBreak: "break-word",
-                    overflowWrap: "anywhere",
-                    width: "100%",
-                    maxWidth: "100%",
-                    fontSize: "13px",
-                    fontFamily: "var(--font-mono)",
-                  }}
-                >
-                  {typeof responseBody === "string"
-                    ? responseBody
-                    : JSON.stringify(responseBody, null, 2)}
-                </SyntaxHighlighter>
-              </div>
+              <SyntaxHighlighter
+                language="json"
+                wrapLongLines
+                style={theme === "dark" ? oneDark : oneLight}
+                customStyle={{
+                  margin: 0,
+                  background: "transparent",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word",
+                  overflowWrap: "anywhere",
+                  fontSize: "13px",
+                  fontFamily: "var(--font-mono)",
+                }}
+              >
+                {typeof responseBody === "string"
+                  ? responseBody
+                  : JSON.stringify(responseBody, null, 2)}
+              </SyntaxHighlighter>
             </div>
           )}
         </div>
       </div>
 
-      {/* HOW TO USE */}
       <HowToUse
         steps={[
           "Enter API URL and select HTTP method",

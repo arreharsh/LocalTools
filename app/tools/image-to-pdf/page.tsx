@@ -11,9 +11,6 @@ import {
 } from "@/components/ui/select";
 import HowToUse from "@/components/tool/HowToUse";
 
-import { runToolWithGuard } from "@/lib/runToolWithGuard";
-import { useAuthModal } from "@/providers/AuthProvider";
-
 /* DND KIT */
 import {
   DndContext,
@@ -32,6 +29,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 
 import { Trash2, Download, FileText } from "lucide-react";
+import { useAuthModal } from "@/providers/AuthProvider";
 
 type ImgItem = {
   id: string;
@@ -87,7 +85,7 @@ function SortableImage({
 }
 
 export default function ImagesToPdf() {
-  const { open } = useAuthModal(); // ✅ auth modal
+  const { open } = useAuthModal();
   const [images, setImages] = useState<ImgItem[]>([]);
   const [pageSize, setPageSize] = useState<"fit" | "a4">("fit");
   const [orientation, setOrientation] = useState<
@@ -119,7 +117,6 @@ export default function ImagesToPdf() {
     setImages((prev) => prev.filter((_, idx) => idx !== i));
   };
 
-  /* ---------------- REAL TOOL LOGIC ---------------- */
   const createPdf = async () => {
     if (images.length === 0) return;
     setLoading(true);
@@ -182,10 +179,41 @@ export default function ImagesToPdf() {
     setLoading(false);
   };
 
-  /* ---------------- GUARDED HANDLER ---------------- */
-  const handleCreatePdf = () => {
-    runToolWithGuard(createPdf, open);
-  };
+  const handleCreatePdf = async () => {
+  if (images.length === 0) return;
+
+  setLoading(true);
+
+  try {
+    // 🔒 RPC usage guard
+    const res = await fetch("/api/run-tool", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || !data.allowed) {
+      if (data.reason === "IP_UNAVAILABLE" || data.plan === "guest") {
+        alert("Guest limit reached. Please log in to continue.");
+        open();
+      } else {
+        alert("Daily limit reached. Upgrade to Pro for unlimited access.");
+      }
+      return;
+    }
+
+    // ✅ allowed → ORIGINAL PDF LOGIC
+    await createPdf();
+  } catch (err: any) {
+    console.error(err);
+    alert("PDF creation failed: " + (err.message || "Unknown error"));
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
   return (
     <div className="max-w-4xl w-full md:min-w-8xl mx-auto px-4 py-6">
@@ -298,9 +326,8 @@ export default function ImagesToPdf() {
         )}
       </div>
 
-     {/* How to Use */}
       <HowToUse
-       className="mt-8"
+        className="mt-8"
         steps={[
           "Upload your images using the upload area. You can select multiple images at once.",
           "Arrange the images in your desired order by dragging and dropping them.",
@@ -309,8 +336,6 @@ export default function ImagesToPdf() {
         ]}
         tip="For best results, use high-resolution images to ensure clarity in the PDF."
       />
-
-
     </div>
   );
 }

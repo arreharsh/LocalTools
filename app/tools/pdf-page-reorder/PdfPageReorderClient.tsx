@@ -189,9 +189,32 @@ export default function PdfPageReorder() {
     );
   };
 
-  const handleApplyChanges = () => {
-  runToolWithGuard(applyChanges, open);
- };
+ const handleApplyChanges = async () => {
+  try {
+    const res = await fetch("/api/run-tool", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || !data.allowed) {
+      if (data.reason === "IP_UNAVAILABLE" || data.plan === "guest") {
+        alert("Guest limit reached. Please log in to continue.");
+        open(); // auth modal
+      } else {
+        alert("Daily limit reached. Upgrade to Pro for unlimited access.");
+      }
+      return;
+    }
+
+    // ✅ allowed → ORIGINAL LOGIC
+    applyChanges();
+  } catch (err: any) {
+    console.error(err);
+    alert("Action failed: " + (err.message || "Unknown error"));
+  }
+};
 
 
   /* ---------- PAGE ACTIONS ---------- */
