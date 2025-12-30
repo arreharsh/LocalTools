@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { FileJson, Trash2, Copy, ArrowLeft } from "lucide-react";
-import { runToolWithGuard } from "@/lib/runToolWithGuard";
 import { useAuthModal } from "@/providers/AuthProvider";
 
 // @ts-ignore
@@ -75,9 +74,7 @@ export default function JsonFormatterPage() {
 
   /* ---------- ACTIONS ---------- */
 
-  const guard = (fn: () => void) => {
-  runToolWithGuard(fn, open);
- };
+  
 
 
   const formatJson = () => {
@@ -246,16 +243,16 @@ export default function JsonFormatterPage() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-          <Btn onClick={() => guard(formatJson)} text="Format JSON" />
-          <Btn onClick={() => guard(minifyJson)} text="Minify JSON" />
-          <Btn onClick={() => guard(validateJson)} text="Validate JSON" />
-          <Btn onClick={() => guard(sortKeys)} text="Sort Keys" />
-          <Btn onClick={() => guard(removeNulls)} text="Remove Nulls" />
-          <Btn onClick={() => guard(flattenJson)} text="Flatten" />
-          <Btn onClick={() => guard(toCSV)} text="To CSV" />
-          <Btn onClick={() => guard(toXML)} text="To XML" />
-          <Btn onClick={() => guard(extractKeys)} text="Extract Keys" />
-          <Btn onClick={() => guard(countItems)} text="Count Items" />
+          <Btn onClick={() => (formatJson)} text="Format JSON" />
+          <Btn onClick={() => (minifyJson)} text="Minify JSON" />
+          <Btn onClick={() => (validateJson)} text="Validate JSON" />
+          <Btn onClick={() => (sortKeys)} text="Sort Keys" />
+          <Btn onClick={() => (removeNulls)} text="Remove Nulls" />
+          <Btn onClick={() => (flattenJson)} text="Flatten" />
+          <Btn onClick={() => (toCSV)} text="To CSV" />
+          <Btn onClick={() => (toXML)} text="To XML" />
+          <Btn onClick={() => (extractKeys)} text="Extract Keys" />
+          <Btn onClick={() => (countItems)} text="Count Items" />
         </div>
       </div>
 

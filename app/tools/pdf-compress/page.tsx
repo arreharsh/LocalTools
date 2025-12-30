@@ -4,7 +4,7 @@ import { useState } from "react";
 import { PDFDocument } from "pdf-lib";
 import { Trash2, FileText } from "lucide-react";
 import HowToUse from "@/components/tool/HowToUse";
-import { runToolWithGuard } from "@/lib/runToolWithGuard";
+
 import { useAuthModal } from "@/providers/AuthProvider";
 
 
@@ -23,11 +23,6 @@ export default function PdfCompress() {
     setError(null);
     setFile(f);
   };
-
-  const handleCompressPdf = () => {
-  runToolWithGuard(compressPdf, open);
-};
-
 
   const removeFile = () => {
     setFile(null);
@@ -168,7 +163,7 @@ export default function PdfCompress() {
             {/* Action */}
             <div className="flex gap-2">
               <button
-                onClick={handleCompressPdf}
+                onClick={compressPdf}
                 disabled={loading}
                 className="px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm disabled:opacity-50"
               >
