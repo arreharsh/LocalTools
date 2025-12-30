@@ -62,7 +62,7 @@ export default function UserMenu() {
         
          
         </button>
-        <span className=""><ThemeToggle /></span>
+        <span className="mr-2"><ThemeToggle /></span>
         </div>
 
 
