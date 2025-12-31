@@ -1,9 +1,9 @@
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
-
-export function createSupabaseServer() {
-  const cookieStore = cookies();
+export async function createSupabaseServer() {
+  // 🔥 cookies() is ASYNC in your Next version
+  const cookieStore = await cookies();
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -11,22 +11,17 @@ export function createSupabaseServer() {
     {
       cookies: {
         getAll() {
-          // Manual fallback for getAll() in dev mode
-          const allCookies = cookieStore.getAll ? cookieStore.getAll() : [];
-          return allCookies.map(c => ({
-            name: c.name,
-            value: c.value,
-          }));
+          // ✅ now this is safe
+          return cookieStore.getAll();
         },
         setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) => {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            try {
               cookieStore.set(name, value, options);
-            });
-          } catch (e) {
-            // Ignore in dev mode
-            console.warn('Cookie set ignored in dev mode:', e);
-          }
+            } catch {
+              // dev / edge safe ignore
+            }
+          });
         },
       },
     }

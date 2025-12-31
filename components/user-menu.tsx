@@ -8,6 +8,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import UserMenuSkeleton from "@/components/skeletons/UserMenuSkeleton";
 
 import { ChevronDown, LogOut, Sparkles, User } from "lucide-react";
+import ProfileUsageModal from "./ProfileUsageModal";
 
 
 
@@ -15,20 +16,35 @@ export default function UserMenu() {
   const { user, isPro, plan, loading } = useAuth();
   const [open, setOpen] = useState(false);
 
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+
   const supabase = createSupabaseBrowser();
 
   /* --- Skeleton while auth resolving --- */
   if (loading) return <UserMenuSkeleton />;
 
   /* --- Logged out: hide menu --- */
-  if (!user) return null;
+  const isGuest = !user;
+  
+ const name = isGuest
+  ? "Guest"
+  : user.user_metadata?.full_name ||
+    user.user_metadata?.name ||
+    "Tools_User";
 
-  const name =
-    user.user_metadata?.full_name || user.user_metadata?.name || "User";
 
-  const initial = name.charAt(0).toUpperCase();
+  const initial = isGuest
+  ? "G"
+  : name.charAt(0).toUpperCase();
+
+
+  //guest 
+
+  
 
   return (
+    <>
     <div className="fixed hidden lg:flex top-4 right-6 z-50 items-start ">
       {/* User container */}
       <div className={`flex flex-col  border backdrop-blur-md shadow-sm overflow-hidden 
@@ -94,7 +110,9 @@ export default function UserMenu() {
             )}
 
             {/* Profile */}
-            <button className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition">
+            <button 
+            onClick={() => setIsProfileOpen(true)}
+            className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition">
               <User className="size-4 opacity-70" />
               Profile
             </button>
@@ -117,5 +135,11 @@ export default function UserMenu() {
 
       
     </div>
+
+    <ProfileUsageModal
+  open={isProfileOpen}
+  onClose={() => setIsProfileOpen(false)}
+/>
+ </>
   );
 }
