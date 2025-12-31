@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, useRef } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+} from "react";
 import type { User } from "@supabase/supabase-js";
 import { createSupabaseBrowser } from "@/lib/supabase/client";
 import AuthModal from "@/components/AuthModal";
@@ -25,8 +31,13 @@ const AuthModalContext = createContext<{ open: () => void }>({
   open: () => {},
 });
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const supabaseRef = useRef(createSupabaseBrowser()); // ✅ SINGLE INSTANCE
+export function AuthProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  // ✅ single supabase instance (important)
+  const supabaseRef = useRef(createSupabaseBrowser());
   const supabase = supabaseRef.current;
 
   const [user, setUser] = useState<User | null>(null);
@@ -36,44 +47,60 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const isPro = plan === "pro";
 
-  async function loadUserPlan(userId: string) {
-    const { data } = await supabase
+  /* ---------------------------
+     Load user plan (SAFE)
+  --------------------------- */
+  const loadUserPlan = async (userId: string) => {
+    const { data, error } = await supabase
       .from("profiles")
       .select("plan, pro_expires_at")
       .eq("id", userId)
       .single();
 
-    if (!data) {
+    if (error || !data) {
       setPlan("free");
       return;
     }
 
-    if (data.pro_expires_at && new Date(data.pro_expires_at) < new Date()) {
+    if (
+      data.pro_expires_at &&
+      new Date(data.pro_expires_at) < new Date()
+    ) {
       setPlan("free");
       return;
     }
 
     setPlan(data.plan ?? "free");
-  }
+  };
 
-  // ✅ INITIAL LOAD
+  /* ---------------------------
+     INITIAL SESSION LOAD
+     (NO LOADING STUCK)
+  --------------------------- */
   useEffect(() => {
     let active = true;
 
-    supabase.auth.getSession().then(({ data }) => {
-      if (!active) return;
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (!active) return;
 
-      const sessionUser = data.session?.user ?? null;
-      setUser(sessionUser);
+        const sessionUser = data.session?.user ?? null;
+        setUser(sessionUser);
 
-      if (sessionUser) {
-        loadUserPlan(sessionUser.id); // ❌ no await
-      } else {
-        setPlan("free");
-      }
+        if (sessionUser) {
+          loadUserPlan(sessionUser.id);
+        } else {
+          setPlan("free");
+        }
 
-      setLoading(false);
-    });
+        // 🔥 loading END here (only once)
+        setLoading(false);
+      })
+      .catch(() => {
+        // safety fallback
+        setLoading(false);
+      });
 
     const { data: sub } = supabase.auth.onAuthStateChange(
       (_event, session) => {
@@ -81,7 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(sessionUser);
 
         if (sessionUser) {
-          loadUserPlan(sessionUser.id); // ❌ no await
+          loadUserPlan(sessionUser.id);
         } else {
           setPlan("free");
         }
@@ -94,6 +121,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  /* ---------------------------
+     REALTIME PLAN SYNC
+     (NO RERENDER LOOP)
+  --------------------------- */
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const channel = supabase
+      .channel(`profile-plan-${user.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "profiles",
+          filter: `id=eq.${user.id}`,
+        },
+        (payload) => {
+          const newPlan = payload.new?.plan as Plan | undefined;
+          if (newPlan) {
+            setPlan(newPlan);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id]);
+
+  /* ---------------------------
+     Modal body lock (unchanged)
+  --------------------------- */
   useEffect(() => {
     document.body.style.overflow = isModalOpen ? "hidden" : "";
     return () => {
@@ -102,10 +163,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [isModalOpen]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, plan, isPro }}>
-      <AuthModalContext.Provider value={{ open: () => setIsModalOpen(true) }}>
+    <AuthContext.Provider
+      value={{ user, loading, plan, isPro }}
+    >
+      <AuthModalContext.Provider
+        value={{ open: () => setIsModalOpen(true) }}
+      >
         {children}
-        <AuthModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        <AuthModal
+          open={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
       </AuthModalContext.Provider>
     </AuthContext.Provider>
   );

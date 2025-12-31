@@ -7,26 +7,38 @@ const supabase = createClient(
 );
 
 export async function POST(req: Request) {
-  const { userId, plan } = await req.json();
+  try {
+    const { userId, plan } = await req.json();
 
-  if (!["free", "pro"].includes(plan)) {
+    if (!userId || !["free", "pro"].includes(plan)) {
+      return NextResponse.json(
+        { error: "Invalid payload" },
+        { status: 400 }
+      );
+    }
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .update({ plan })
+      .eq("id", userId)
+      .select("id, plan")
+      .single();
+
+    if (error) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      user: data,
+    });
+  } catch {
     return NextResponse.json(
-      { error: "Invalid plan" },
-      { status: 400 }
-    );
-  }
-
-  const { error } = await supabase
-    .from("profiles")
-    .update({ plan })
-    .eq("id", userId);
-
-  if (error) {
-    return NextResponse.json(
-      { error: error.message },
+      { error: "Server error" },
       { status: 500 }
     );
   }
-
-  return NextResponse.json({ success: true });
 }

@@ -27,7 +27,7 @@ export default function RootLayout({
         />
       </head>
       <body>
-        {/* ClientLayout ab (main) group mein shift ho gaya */}
+        {/* ClientLayout */}
         {children}
         <Analytics />
       </body>
