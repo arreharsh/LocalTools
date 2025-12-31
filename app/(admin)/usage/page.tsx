@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { RotateCcw } from "lucide-react";
+import AdminShell from "../components/AdminShell";
+import metadata from "../dashboard/page";
 
 type TodayStats = {
   today: string;
@@ -38,6 +40,7 @@ export default function UsagePage() {
   }
 
   return (
+    <AdminShell>
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">Usage Analytics</h1>
 
@@ -67,6 +70,7 @@ export default function UsagePage() {
         </div>
       </div>
     </div>
+    </AdminShell>
   );
 }
 

@@ -38,7 +38,7 @@ export default function Topbar() {
           <Menu size={20} />
         </button>
 
-        <div className="font-medium">Admin Panel</div>
+        <div className="font-medium">Admin Dashboard</div>
 
         <div className="flex items-center gap-3">
           <button
@@ -57,9 +57,10 @@ export default function Topbar() {
 
           <button
             onClick={logout}
-            className="p-1 rounded hover:bg-muted text-red-600"
+            className="p-2 flex gap-2 items-center rounded hover:bg-muted text-red-600"
             aria-label="Logout"
           >
+            <span className="font-medium">Logout</span>
             <LogOut size={18} />
           </button>
         </div>

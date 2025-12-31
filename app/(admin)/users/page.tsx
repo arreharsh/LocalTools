@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { BadgeCheck, BadgeX, Loader2, Search } from "lucide-react";
+import AdminShell from "../components/AdminShell";
+import metadata from "../dashboard/page";
 
 type User = {
   id: string;
@@ -71,6 +73,7 @@ export default function UsersPage() {
   }
 
   return (
+    <AdminShell>
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h1 className="text-2xl font-semibold">Users</h1>
@@ -180,5 +183,6 @@ export default function UsersPage() {
         </table>
       </div>
     </div>
+    </AdminShell>
   );
 }

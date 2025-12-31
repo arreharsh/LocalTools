@@ -120,37 +120,7 @@ export function AuthProvider({
       sub.subscription.unsubscribe();
     };
   }, []);
-
-  /* ---------------------------
-     REALTIME PLAN SYNC
-     (NO RERENDER LOOP)
-  --------------------------- */
-  useEffect(() => {
-    if (!user?.id) return;
-
-    const channel = supabase
-      .channel(`profile-plan-${user.id}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "profiles",
-          filter: `id=eq.${user.id}`,
-        },
-        (payload) => {
-          const newPlan = payload.new?.plan as Plan | undefined;
-          if (newPlan) {
-            setPlan(newPlan);
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [user?.id]);
+ 
 
   /* ---------------------------
      Modal body lock (unchanged)

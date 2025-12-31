@@ -1,7 +1,15 @@
+import AdminShell from "../components/AdminShell";
+
+export const metadata = {
+  title: "Admin Dashboard - LocalTools",
+  description: "Overview of administrative metrics and statistics.",
+};
+
 export default function AdminDashboard() {
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">
+    <AdminShell>
+      <div className="space-y-6">
+        <h1 className="text-2xl font-semibold">
         Dashboard
       </h1>
 
@@ -11,6 +19,7 @@ export default function AdminDashboard() {
         <StatCard title="Tool Runs Today" value="—" />
       </div>
     </div>
+    </AdminShell>
   );
 }
 
