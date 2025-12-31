@@ -4,11 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowser } from "@/lib/supabase/client";
 
-const metadata = {
-  title: "Admin Login - LocalTools",
-  description: "Login to the admin dashboard of LocalTools.",
-};
-export { metadata };
+
 
 export default function AdminLoginPage() {
   const router = useRouter();
