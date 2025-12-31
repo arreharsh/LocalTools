@@ -1,31 +1,23 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useRef } from "react";
 import type { User } from "@supabase/supabase-js";
-import { supabase } from "@/lib/supabase/client";
+import { createSupabaseBrowser } from "@/lib/supabase/client";
 import AuthModal from "@/components/AuthModal";
-
-/* =========================
-   Types
-========================= */
 
 type Plan = "free" | "pro";
 
 type AuthContextType = {
   user: User | null;
   loading: boolean;
-  plan: Plan | null;
+  plan: Plan;
   isPro: boolean;
 };
-
-/* =========================
-   Contexts
-========================= */
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
-  plan: null,
+  plan: "free",
   isPro: false,
 });
 
@@ -33,38 +25,30 @@ const AuthModalContext = createContext<{ open: () => void }>({
   open: () => {},
 });
 
-/* =========================
-   Provider
-========================= */
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const supabaseRef = useRef(createSupabaseBrowser()); // ✅ SINGLE INSTANCE
+  const supabase = supabaseRef.current;
+
   const [user, setUser] = useState<User | null>(null);
-  const [plan, setPlan] = useState<Plan | null>(null);
+  const [plan, setPlan] = useState<Plan>("free");
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const isPro = plan === "pro";
 
-  /* =========================
-     Load user plan (no loading here!)
-  ========================= */
-
   async function loadUserPlan(userId: string) {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("profiles")
       .select("plan, pro_expires_at")
       .eq("id", userId)
       .single();
 
-    if (error || !data) {
+    if (!data) {
       setPlan("free");
       return;
     }
 
-    if (
-      data.pro_expires_at &&
-      new Date(data.pro_expires_at) < new Date()
-    ) {
+    if (data.pro_expires_at && new Date(data.pro_expires_at) < new Date()) {
       setPlan("free");
       return;
     }
@@ -72,65 +56,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setPlan(data.plan ?? "free");
   }
 
-  /* =========================
-     Auth bootstrap (FIXED)
-  ========================= */
-
+  // ✅ INITIAL LOAD
   useEffect(() => {
-    let mounted = true;
+    let active = true;
 
-    // 🔥 ONLY place where loading=false is decided
-    async function initAuth() {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+    supabase.auth.getSession().then(({ data }) => {
+      if (!active) return;
 
-      if (!mounted) return;
-
-      const sessionUser = session?.user ?? null;
+      const sessionUser = data.session?.user ?? null;
       setUser(sessionUser);
 
       if (sessionUser) {
-        await loadUserPlan(sessionUser.id);
+        loadUserPlan(sessionUser.id); // ❌ no await
       } else {
         setPlan("free");
       }
 
-      setLoading(false); // ✅ SINGLE SOURCE OF TRUTH
-    }
-
-    initAuth();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!mounted) return;
-
-      const sessionUser = session?.user ?? null;
-      setUser(sessionUser);
-
-      if (event === "SIGNED_IN") {
-        localStorage.removeItem("guest_usage");
-        if (sessionUser) {
-          await loadUserPlan(sessionUser.id);
-        }
-      }
-
-      if (event === "SIGNED_OUT") {
-        setPlan("free");
-      }
-      // ❌ NO setLoading here
+      setLoading(false);
     });
 
+    const { data: sub } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        const sessionUser = session?.user ?? null;
+        setUser(sessionUser);
+
+        if (sessionUser) {
+          loadUserPlan(sessionUser.id); // ❌ no await
+        } else {
+          setPlan("free");
+        }
+      }
+    );
+
     return () => {
-      mounted = false;
-      subscription.unsubscribe();
+      active = false;
+      sub.subscription.unsubscribe();
     };
   }, []);
-
-  /* =========================
-     Lock body scroll when modal open
-  ========================= */
 
   useEffect(() => {
     document.body.style.overflow = isModalOpen ? "hidden" : "";
@@ -148,10 +110,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     </AuthContext.Provider>
   );
 }
-
-/* =========================
-   Hooks
-========================= */
 
 export const useAuth = () => useContext(AuthContext);
 export const useAuthModal = () => useContext(AuthModalContext);

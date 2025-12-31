@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase/server";
+import { createSupabaseBrowser } from "@/lib/supabase/client";
+
 import { useAuth } from "@/providers/AuthProvider";
 
 type Props = {
@@ -19,6 +20,8 @@ export default function AuthModal({ open, onClose }: Props) {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const supabase = createSupabaseBrowser();
 
   useEffect(() => {
     if (user && open) onClose();

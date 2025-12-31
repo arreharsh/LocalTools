@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useAuth } from "@/providers/AuthProvider";
-import { supabase } from "@/lib/supabase/client";
+import { createSupabaseBrowser } from "@/lib/supabase/client";
+
 import { ThemeToggle } from "@/components/theme-toggle";
 import UserMenuSkeleton from "@/components/skeletons/UserMenuSkeleton";
 
@@ -13,6 +14,8 @@ import { ChevronDown, LogOut, Sparkles, User } from "lucide-react";
 export default function UserMenu() {
   const { user, isPro, plan, loading } = useAuth();
   const [open, setOpen] = useState(false);
+
+  const supabase = createSupabaseBrowser();
 
   /* --- Skeleton while auth resolving --- */
   if (loading) return <UserMenuSkeleton />;
