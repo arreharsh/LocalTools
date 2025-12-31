@@ -1,27 +1,21 @@
-// middleware.ts
-import { createServerClient } from '@supabase/ssr';
-import { NextResponse } from 'next/server';
-import { NextRequest } from 'next/server';
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, NextRequest } from "next/server";
 
+export async function middleware(req: NextRequest) {
+  const host = req.headers.get("host") ?? "";
 
-interface Cookie {
-  name: string;
-  value: string;
-}
+  // Skip if not admin subdomain
+  if (!host.startsWith("admin.")) {
+    return NextResponse.next();
+  }
 
-interface CookieToSet extends Cookie {
-  options?: Record<string, unknown>;
-}
+  const pathname = req.nextUrl.pathname;
 
-interface CookieOptions {
-  [key: string]: unknown;
-}
+  // ✅ login page always allow
+  if (pathname === "/login") {
+    return NextResponse.next();
+  }
 
-interface CookieWithOptions extends Cookie {
-  options?: CookieOptions;
-}
-
-export async function middleware(req: NextRequest): Promise<NextResponse> {
   const res = NextResponse.next();
 
   const supabase = createServerClient(
@@ -29,15 +23,14 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll(): Cookie[] {
-          // Explicitly req.cookies se get karo
+        getAll() {
           return req.cookies.getAll().map((c) => ({
             name: c.name,
             value: c.value,
           }));
         },
-        setAll(cookiesToSet: CookieWithOptions[]): void {
-          cookiesToSet.forEach(({ name, value, options }) => {
+        setAll(cookies) {
+          cookies.forEach(({ name, value, options }) => {
             res.cookies.set(name, value, options);
           });
         },
@@ -45,14 +38,25 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
     }
   );
 
-  // Session get karo taaki refresh ho
-  await supabase.auth.getSession();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const loginUrl = new URL("/login", req.url);
+
+  if (!user) {
+    return NextResponse.redirect(loginUrl);
+  }
+
+  if (user.app_metadata?.role !== "admin") {
+    return NextResponse.redirect(loginUrl);
+  }
 
   return res;
 }
 
 export const config = {
-  matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|api/.*).*)',  // Sab routes pe chalao (limit APIs bhi include kar lo ab)
-  ],
+  // matcher rehne do broad,
+  // host check upar hi skip kar dega
+  matcher: ["/((?!_next|favicon.ico|api).*)"],
 };
