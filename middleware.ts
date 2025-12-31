@@ -1,17 +1,34 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, NextRequest } from "next/server";
 
-export async function proxy(req: NextRequest) {
+function isAdminHost(host: string) {
+  // local dev
+  if (
+    host.startsWith("admin.localtools.app") ||
+    host.startsWith("admin.localhost")
+  ) {
+    return true;
+  }
+
+  // production
+  if (host.startsWith("admin.")) {
+    return true;
+  }
+
+  return false;
+}
+
+export async function middleware(req: NextRequest) {
   const host = req.headers.get("host") ?? "";
 
-  // Skip if not admin subdomain
-  if (!host.startsWith("admin.")) {
+  // ✅ MAIN APP → full skip
+  if (!isAdminHost(host)) {
     return NextResponse.next();
   }
 
   const pathname = req.nextUrl.pathname;
 
-  // ✅ login page always allow
+  // ✅ login page always allowed
   if (pathname === "/login") {
     return NextResponse.next();
   }
@@ -56,7 +73,5 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  // matcher rehne do broad,
-  // host check upar hi skip kar dega
   matcher: ["/((?!_next|favicon.ico|api).*)"],
 };

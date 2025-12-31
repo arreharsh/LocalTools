@@ -6,19 +6,19 @@ import { createSupabaseBrowser } from "@/lib/supabase/client";
 
 export default function AdminLoginPage() {
   const router = useRouter();
+  const supabase = createSupabaseBrowser();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const supabase = createSupabaseBrowser();
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -30,8 +30,8 @@ export default function AdminLoginPage() {
       return;
     }
 
-    // ✅ middleware will auto-allow admin
-    router.replace("/dashboard");
+    router.push("/dashboard");
+    router.refresh();
   }
 
   return (
