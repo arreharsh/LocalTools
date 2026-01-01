@@ -38,7 +38,7 @@ export default function ProfileUsageModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="w-full max-w-md rounded-xl bg-white shadow-lg">
+      <div className="w-full max-w-xs sm:max-w-md rounded-xl bg-white shadow-lg ">
         {/* Header */}
         <div className="flex items-center justify-between border-b px-5 py-4">
           <h2 className="text-lg font-semibold">Your Usage</h2>

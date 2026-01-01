@@ -5,18 +5,20 @@ import Testimonials from "@/components/Testimonials";
 import { ArrowRight, Sparkles, Check } from "lucide-react";
 import { motion } from "framer-motion";
 import { Footer } from "@/components/footer";
+import { PricingSection } from "@/components/PricingSection";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
   visible: { opacity: 1, y: 0 },
+  transition: { duration: 0.6 },
 };
 
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-background text-foreground">
-
       {/* HERO */}
-      <section className="max-w-7xl mx-auto px-6 pb-20 text-center">
+
+      <section className=" max-w-7xl mx-auto px-6 pb-20 text-center">
         <motion.div
           initial="hidden"
           animate="visible"
@@ -34,12 +36,17 @@ export default function HomePage() {
           animate="visible"
           variants={fadeUp}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-4xl md:text-6xl font-bold tracking-tight"
+          className="relative z-10 text-4xl md:text-6xl font-bold tracking-tight"
         >
-          Powerful tools <br className="hidden sm:block" />
-          <span className="text-accent">Zero data tracking</span>
+          <span className="bg-gradient-to-b from-foreground to-foreground/70 bg-clip-text text-transparent">
+            Powerful tools
+            <br className="hidden sm:block" />
+            <span className="text-accent">
+              {" "}
+              Your data never leaves your device
+            </span>
+          </span>
         </motion.h1>
-
         <motion.p
           initial="hidden"
           animate="visible"
@@ -47,8 +54,9 @@ export default function HomePage() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mt-6 text-base md:text-lg text-muted-foreground max-w-2xl mx-auto"
         >
-          A growing collection of local tools that run entirely in your browser Your data never
-          leaves your device <span className="text-accent">″</span>Privacy focused — no tracking, no ads<span className="text-accent">″</span>
+          Run high-quality tools directly in your browser.
+          <br />
+          No uploads. No tracking. No ads.
         </motion.p>
 
         <motion.div
@@ -58,20 +66,40 @@ export default function HomePage() {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="mt-10 flex justify-center gap-4"
         >
-          <Link
-            href="/tools"
-            className="inline-flex shadow-md  items-center gap-2 rounded-xl bg-accent px-6 py-3 text-sm font-medium text-accent-foreground hover:opacity-90 transition"
+          {/* Primary CTA */}
+          <motion.div
+            whileHover={{
+              scale: 1.06,
+              y: -2,
+            }}
+            whileTap={{ scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 300, damping: 18 }}
           >
-            Explore Tools
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+            <Link
+              href="/tools"
+              className="inline-flex shadow-md items-center gap-2 rounded-xl bg-accent px-6 py-3 text-sm font-medium text-accent-foreground hover:opacity-90 transition"
+            >
+              Explore tools
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </motion.div>
 
-          <Link
-            href="/tools/invoice-generator"
-            className="inline-flex items-center gap-2 rounded-xl border border-border px-6 py-3 text-sm font-medium hover:bg-muted transition"
+          {/* Secondary CTA */}
+          <motion.div
+            whileHover={{
+              scale: 1.05,
+              y: -1,
+            }}
+            whileTap={{ scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 260, damping: 20 }}
           >
-            Try Invoice Generator
-          </Link>
+            <Link
+              href="/tools/invoice-generator"
+              className="inline-flex items-center shadow-md gap-2 rounded-xl border border-border px-6 py-3 text-sm font-medium hover:bg-muted transition"
+            >
+              Try tools instantly
+            </Link>
+          </motion.div>
         </motion.div>
       </section>
 
@@ -110,120 +138,94 @@ export default function HomePage() {
         </motion.div>
       </section>
 
-      {/* PRICING */}
-      <section className="border-t  bg-gradient-to-br from-foreground/3 to-transparent">
-        <div className="max-w-7xl mx-auto px-6 py-24 text-center">
-          <motion.h2
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeUp}
-            className="text-2xl md:text-3xl font-semibold"
-          >
-            Simple, honest pricing
-          </motion.h2>
+      {/*  VALUE SECTION  */}
+      <section className="max-w-7xl mx-auto px-6 pt-12 pb-24 bg-gradient-to-br from-accent/5 to-transparent ">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeUp}
+          className="text-center max-w-3xl mx-auto"
+        >
+          <h2 className="text-2xl md:text-3xl font-semibold">
+            Everything you need to get work done - fast
+          </h2>
 
-          <motion.p
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeUp}
-            transition={{ delay: 0.1 }}
-            className="mt-3 text-muted-foreground"
-          >
-            Try it first or get lifetime access — no subscriptions
-          </motion.p>
+          <p className="mt-4 text-muted-foreground text-base">
+            Practical tools for JSON, PDFs, APIs and everyday tasks.
+            <br className="hidden sm:block" />
+            No installs. No uploads. No tracking.
+          </p>
+        </motion.div>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            transition={{ staggerChildren: 0.2 }}
-            className="mt-14 grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto"
-          >
-            {/* 3 DAY PASS */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          transition={{ staggerChildren: 0.08 }}
+          className="mt-14 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
+        >
+          {[
+            {
+              title: "Format & validate JSON",
+              desc: "Clean, readable JSON with instant validation.",
+            },
+            {
+              title: "Edit, merge & reorder PDFs",
+              desc: "Handle PDFs directly in your browser.",
+            },
+            {
+              title: "Generate invoices instantly",
+              desc: "Simple invoices without complex software.",
+            },
+            {
+              title: "Test APIs locally",
+              desc: "Send requests and inspect responses fast.",
+            },
+            {
+              title: "Decode & encode tokens",
+              desc: "JWT, Base64 and common encodings.",
+            },
+            {
+              title: "Small tools for daily work",
+              desc: "Focused utilities that save time.",
+            },
+          ].map((item) => (
             <motion.div
+              key={item.title}
               variants={fadeUp}
-              className="rounded-2xl border border-border hover:bg-gradient-to-br from-accent/10 to-transparent p-8 text-left transition"
+              whileHover={{
+                rotateX: 6,
+                rotateY: -6,
+                scale: 1.04,
+              }}
+              transition={{ type: "spring", stiffness: 200, damping: 18 }}
+              style={{ transformStyle: "preserve-3d" }}
+              className="group relative rounded-2xl border border-border bg-card/40 p-6 shadow-sm"
             >
-              <h3 className="text-xl font-semibold">3-Day Pass</h3>
+              {/* subtle glow layer */}
+              <div
+                className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition"
+                style={{
+                  background:
+                    "radial-gradient(600px at 50% 0%, hsl(var(--accent) / 0.15), transparent 70%)",
+                  transform: "translateZ(-1px)",
+                }}
+              />
 
-              <div className="mt-4 flex items-end gap-2">
-                <span className="text-4xl text-accent font-bold">$2</span>
-                <span className="text-md font-semibold text-muted-foreground">
-                  / 3 days
-                </span>
+              <div style={{ transform: "translateZ(20px)" }}>
+                <h3 className="text-lg font-semibold">{item.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {item.desc}
+                </p>
               </div>
-
-              <ul className="mt-6 space-y-3 text-sm">
-                {[
-                  "All tools unlocked for 3 days",
-                  "Support for large JSON & files",
-                  "Access to API & developer utilities",
-                  "Fast performance with no limits",
-                  "No ads, no tracking, no clutter",
-                  "Works fully in your browser",
-                ].map((f) => (
-                  <li key={f} className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-accent" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-
-              <Link
-                href="#"
-                className="mt-8 block w-full rounded-xl border border-border px-4 py-3 text-center text-sm font-medium hover:bg-accent hover:text-accent-foreground transition"
-              >
-                Get 3-Day Pass
-              </Link>
             </motion.div>
-
-            {/* LIFETIME */}
-            <motion.div
-              variants={fadeUp}
-              className="relative rounded-2xl border border-accent bg-gradient-to-br from-accent/5 to-transparent backdrop-blur-sm p-8 text-left"
-            >
-              <span className="absolute -top-3 left-6 rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">
-                Best Value
-              </span>
-
-              <h3 className="text-xl font-semibold">Pro Lifetime</h3>
-
-              <div className="mt-4 flex items-end gap-2">
-                <span className="text-md font-semibold text-muted-foreground line-through">
-                  $20
-                </span>
-                <span className="text-4xl text-accent font-bold">$6</span>
-              </div>
-
-              <ul className="mt-6 space-y-3 text-sm">
-                {[
-                  "Unlimited access to all tools",
-                  "Large JSON & heavy file support",
-                  "Advanced API & developer utilities",
-                  "Early access to upcoming tools",
-                  "Privacy-first, browser-only processing",
-                  "No ads, no subscriptions, ever",
-                  "Lifetime updates included",
-                ].map((f) => (
-                  <li key={f} className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-accent" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-
-              <Link
-                href="#"
-                className="mt-8 block w-full rounded-xl bg-accent px-4 py-3 text-center text-sm font-medium text-accent-foreground hover:opacity-90 transition"
-              >
-                Get Lifetime Access
-              </Link>
-            </motion.div>
-          </motion.div>
-        </div>
+          ))}
+        </motion.div>
       </section>
+
+      {/* PRICING */}
+      <PricingSection />
 
       {/* TESTIMONIALS */}
       <Testimonials />

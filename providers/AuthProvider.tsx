@@ -18,6 +18,7 @@ type AuthContextType = {
   loading: boolean;
   plan: Plan;
   isPro: boolean;
+  pro_expires_at: string | null;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -25,6 +26,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   plan: "free",
   isPro: false,
+  pro_expires_at: null,
 });
 
 const AuthModalContext = createContext<{ open: () => void }>({
@@ -36,46 +38,54 @@ export function AuthProvider({
 }: {
   children: React.ReactNode;
 }) {
-  // ✅ single supabase instance (important)
   const supabaseRef = useRef(createSupabaseBrowser());
   const supabase = supabaseRef.current;
 
   const [user, setUser] = useState<User | null>(null);
   const [plan, setPlan] = useState<Plan>("free");
+  const [proExpiresAt, setProExpiresAt] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const isPro = plan === "pro";
+  // ✅ PRO = plan === "pro" AND not expired
+  const isPro =
+    plan === "pro" &&
+    proExpiresAt !== null &&
+    new Date(proExpiresAt) > new Date();
 
   /* ---------------------------
-     Load user plan (SAFE)
+     Load user plan + expiry
   --------------------------- */
   const loadUserPlan = async (userId: string) => {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("profiles")
       .select("plan, pro_expires_at")
       .eq("id", userId)
       .single();
 
-    if (error || !data) {
+    if (!data) {
       setPlan("free");
+      setProExpiresAt(null);
       return;
     }
 
+    // ❌ expired → free
     if (
       data.pro_expires_at &&
       new Date(data.pro_expires_at) < new Date()
     ) {
       setPlan("free");
+      setProExpiresAt(null);
       return;
     }
 
+    // ✅ active
     setPlan(data.plan ?? "free");
+    setProExpiresAt(data.pro_expires_at ?? null);
   };
 
   /* ---------------------------
-     INITIAL SESSION LOAD
-     (NO LOADING STUCK)
+     Initial session load
   --------------------------- */
   useEffect(() => {
     let active = true;
@@ -92,15 +102,12 @@ export function AuthProvider({
           loadUserPlan(sessionUser.id);
         } else {
           setPlan("free");
+          setProExpiresAt(null);
         }
 
-        // 🔥 loading END here (only once)
         setLoading(false);
       })
-      .catch(() => {
-        // safety fallback
-        setLoading(false);
-      });
+      .catch(() => setLoading(false));
 
     const { data: sub } = supabase.auth.onAuthStateChange(
       (_event, session) => {
@@ -111,6 +118,7 @@ export function AuthProvider({
           loadUserPlan(sessionUser.id);
         } else {
           setPlan("free");
+          setProExpiresAt(null);
         }
       }
     );
@@ -120,10 +128,9 @@ export function AuthProvider({
       sub.subscription.unsubscribe();
     };
   }, []);
- 
 
   /* ---------------------------
-     Modal body lock (unchanged)
+     Modal body lock
   --------------------------- */
   useEffect(() => {
     document.body.style.overflow = isModalOpen ? "hidden" : "";
@@ -134,7 +141,13 @@ export function AuthProvider({
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, plan, isPro }}
+      value={{
+        user,
+        loading,
+        plan,
+        isPro,
+        pro_expires_at: proExpiresAt,
+      }}
     >
       <AuthModalContext.Provider
         value={{ open: () => setIsModalOpen(true) }}

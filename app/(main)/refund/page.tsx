@@ -22,7 +22,7 @@ export default function RefundPolicyPage() {
   return (
     <main className="min-h-screen bg-background text-foreground">
       {/* HEADER */}
-      <section className="max-w-5xl mx-auto px-6 pt-16 pb-12">
+      <section className="max-w-5xl mx-auto px-6 pb-12">
         <div className="flex justify-start pb-4">
           <button
             onClick={() => router.back()}

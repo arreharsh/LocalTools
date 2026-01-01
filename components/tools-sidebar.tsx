@@ -228,7 +228,7 @@ export function ToolsSidebar({
 
       {!loading && user && (
         <SidebarFooter className="border-t p-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 group-data-[collapsible=icon]:hidden">
             {/* Avatar */}
             <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary font-semibold">
               {(
@@ -241,7 +241,7 @@ export function ToolsSidebar({
             </div>
 
             {/* Name */}
-            <div className="min-w-0 group-data-[collapsible=icon]:hidden">
+            <div className="min-w-0 ">
               <p className="text-sm font-medium truncate leading-tight">
                 {user.user_metadata?.full_name || user.email?.split("@")[0]}
               </p>

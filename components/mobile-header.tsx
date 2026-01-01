@@ -3,21 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import {
-  Search,
-  Sparkles,
-  X,
-  LogOut,
-  User,
-} from "lucide-react";
+import { Search, Sparkles, X, LogOut, User } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import RequestToolModal from "@/components/RequestToolModal";
 import { useAuth, useAuthModal } from "@/providers/AuthProvider";
 import { createSupabaseBrowser } from "@/lib/supabase/client";
+import ProfileUsageModal from "./ProfileUsageModal";
 
 const supabase = createSupabaseBrowser();
-
-
 
 const PLACEHOLDERS = [
   "PDF Merge",
@@ -29,10 +22,12 @@ const PLACEHOLDERS = [
 
 export default function MobileHeader() {
   const router = useRouter();
-  const { user, loading } = useAuth();
+  const { user, loading, isPro, plan } = useAuth();
   const { open: openAuth } = useAuthModal();
 
   const [openRequest, setOpenRequest] = useState(false);
+
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   /* scroll hide */
   const lastScroll = useRef(0);
@@ -70,9 +65,7 @@ export default function MobileHeader() {
   }, [router]);
 
   const name =
-    user?.user_metadata?.full_name ||
-    user?.user_metadata?.name ||
-    "User";
+    user?.user_metadata?.full_name || user?.user_metadata?.name || "User";
 
   const initial = name.charAt(0).toUpperCase();
 
@@ -164,7 +157,7 @@ export default function MobileHeader() {
           <div className="px-4 py-3 space-y-2">
             {/* THEME */}
             <div className="flex items-center justify-between px-3 py-2 rounded-md hover:bg-muted/60">
-              <span className="text-sm font-semibold">Theme</span>
+              <span className="text-sm font-semibold">Dark Mode</span>
               <ThemeToggle />
             </div>
 
@@ -172,26 +165,35 @@ export default function MobileHeader() {
 
             {/* USER SECTION */}
             {!loading && user && (
-              <div className="flex items-center gap-3 px-3 py-2 rounded-md bg-muted/40">
-                <div className="flex size-9 items-center justify-center rounded-full bg-primary/15 text-primary font-semibold">
-                  {initial}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    Free plan
-                  </p>
+              <>
+                <div className="flex items-center gap-3 px-3 py-2 shadow-xs border rounded-md bg-muted/40">
+                  <div className="flex size-9 items-center justify-center rounded-full bg-primary/15 text-primary font-semibold">
+                    {initial}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{name}</p>
+                    <p className="text-xs text-muted-foreground">{isPro ? "Pro plan" : "Free plan"}</p>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      await supabase.auth.signOut();
+                      setMenuOpen(false);
+                    }}
+                    className="text-red-600 flex items-center text-sm gap-1 font-medium hover:text-red-700 border bg-foreground/5 border-border rounded-md px-3 py-1"
+                  >
+                    Logout<LogOut size={14} />
+                  </button>
                 </div>
                 <button
-                  onClick={async () => {
-                    await supabase.auth.signOut();
+                  onClick={() => {
+                    setIsProfileOpen(true);
                     setMenuOpen(false);
                   }}
-                  className="text-red-600 hover:text-red-700"
+                  className="w-full px-3 py-2 rounded-md border border-border text-left font-semibold text-sm"
                 >
-                  <LogOut size={18} />
+                  Usage Info
                 </button>
-              </div>
+              </>
             )}
 
             {!loading && !user && (
@@ -212,11 +214,11 @@ export default function MobileHeader() {
 
             <button
               onClick={() => router.push("/pricing")}
-              className="
+              className={`
                 w-full flex items-center gap-2
                 px-3 py-2 rounded-md border border-border
-                text-sm hover:bg-muted/60 font-semibold
-              "
+                text-sm hover:bg-muted/60 font-semibold ${isPro ? "hidden" : ""}
+              `}
             >
               <Sparkles size={14} />
               Get Pro
@@ -233,7 +235,7 @@ export default function MobileHeader() {
               onClick={() => setOpenRequest(true)}
               className="w-full px-3 py-2 rounded-md border border-border text-left font-semibold text-sm"
             >
-              Request a Tool
+            Request a Tool + 
             </button>
           </div>
         </div>
@@ -242,6 +244,10 @@ export default function MobileHeader() {
       <RequestToolModal
         open={openRequest}
         onClose={() => setOpenRequest(false)}
+      />
+      <ProfileUsageModal
+        open={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
       />
     </>
   );
