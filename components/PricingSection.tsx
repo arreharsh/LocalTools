@@ -34,7 +34,7 @@ const goTo3Day = () => {
     isPro && new Date(pro_expires_at) > new Date("2090-01-01");
 
   return (
-    <section className="border-t bg-gradient-to-br from-foreground/3 to-transparent">
+    <section className=" bg-background to-transparent">
       <div className="max-w-7xl mx-auto px-6 py-24 text-center">
         <motion.h2
           initial="hidden"
@@ -43,7 +43,7 @@ const goTo3Day = () => {
           variants={fadeUp}
           className="text-2xl md:text-3xl font-semibold"
         >
-          Simple, honest pricing
+          Simple and honest pricing
         </motion.h2>
 
         <motion.p
@@ -54,7 +54,7 @@ const goTo3Day = () => {
           transition={{ delay: 0.1 }}
           className="mt-3 text-muted-foreground"
         >
-          Start free. Upgrade only if you need more.
+          Start free. Upgrade only if you need more. No subscriptions ever.
         </motion.p>
 
         <motion.div
@@ -67,7 +67,7 @@ const goTo3Day = () => {
           {/* FOREVER FREE */}
           <PlanCard
             title="Forever Free"
-            price="$0"
+            price="₹0"
             features={[
               { label: "Limited daily usage", available: true },
               { label: "Essential tools access", available: true },

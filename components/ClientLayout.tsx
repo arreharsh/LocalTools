@@ -44,7 +44,7 @@ export default function ClientLayout({
         <SidebarProvider open={open} onOpenChange={setOpen}>
           {/* @ts-expect-error Server Component */}
           <ToolsSidebar />
-          <SidebarInset className="min-h-screen overflow-y-auto pt-18">
+          <SidebarInset className="min-h-screen overflow-y-auto pt-16 md:pt-0">
             {children}
           </SidebarInset>
         </SidebarProvider>

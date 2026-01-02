@@ -6,6 +6,9 @@ import { ArrowRight, Sparkles, Check } from "lucide-react";
 import { motion } from "framer-motion";
 import { Footer } from "@/components/footer";
 import { PricingSection } from "@/components/PricingSection";
+import ShinyText from "@/components/ui/ShinyText";
+import BlurText from "@/components/BlurText";
+import { cn } from "@/lib/utils";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -15,93 +18,119 @@ const fadeUp = {
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="min-h-screen bg-background  text-foreground">
       {/* HERO */}
 
-      <section className=" max-w-7xl mx-auto px-6 pb-20 text-center">
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={fadeUp}
-          transition={{ duration: 0.6 }}
-          className="inline-flex items-center gap-2 px-4 py-1 mb-6 rounded-full bg-green-500/10 border-green-200/20 border border-border text-sm"
-        >
-          {/* <img src="/logo.png" alt="Sparkles" className="w-4 h-4" />  baad me use krunga */}
-          <Sparkles className="w-4 h-4" />
-          Privacy-first utility tools
-        </motion.div>
+      <div className="relative w-full overflow-hidden">
+        {/* Grid background */}
+        <div
+          className={cn(
+            "absolute inset-0",
+            "[background-size:40px_40px]",
+            "[background-image:linear-gradient(to_right,#e4e4e7_1px,transparent_1px),linear-gradient(to_bottom,#e4e4e7_1px,transparent_1px)]",
+            "dark:[background-image:linear-gradient(to_right,#262626_1px,transparent_1px),linear-gradient(to_bottom,#262626_1px,transparent_1px)]"
+          )}
+        />
 
-        <motion.h1
-          initial="hidden"
-          animate="visible"
-          variants={fadeUp}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="relative z-10 text-4xl md:text-6xl font-bold tracking-tight"
-        >
-          <span className="bg-gradient-to-b from-foreground to-foreground/70 bg-clip-text text-transparent">
-            Powerful tools
-            <br className="hidden sm:block" />
-            <span className="text-accent">
-              {" "}
-              Your data never leaves your device
-            </span>
-          </span>
-        </motion.h1>
-        <motion.p
-          initial="hidden"
-          animate="visible"
-          variants={fadeUp}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-6 text-base md:text-lg text-muted-foreground max-w-2xl mx-auto"
-        >
-          Run high-quality tools directly in your browser.
-          <br />
-          No uploads. No tracking. No ads.
-        </motion.p>
+        {/* Radial fade */}
+        <div className="pointer-events-none absolute inset-0 bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_25%,black)] dark:bg-black" />
 
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={fadeUp}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-10 flex justify-center gap-4"
-        >
-          {/* Primary CTA */}
+        {/* HERO CONTENT (UNCHANGED) */}
+        <section className="relative z-9 max-w-7xl mx-auto px-6 pb-20 pt-24 text-center">
           <motion.div
-            whileHover={{
-              scale: 1.06,
-              y: -2,
-            }}
-            whileTap={{ scale: 0.96 }}
-            transition={{ type: "spring", stiffness: 300, damping: 18 }}
+            initial="hidden"
+            animate="visible"
+            variants={fadeUp}
+            transition={{ duration: 0.6 }}
+            className="inline-flex items-center text-accent gap-2 px-4 py-1 mb-6 backdrop-blur-sm rounded-full bg-green-500/10 border-green-200/20 border border-border text-sm"
+          >
+            <ShinyText
+              text="Privacy-first utility tools"
+              speed={2}
+              delay={0}
+              color={`#000000ff  `}
+              shineColor="#ffffffff"
+              spread={120}
+              direction="left"
+              pauseOnHover
+              className="font-medium"
+            />
+          </motion.div>
+
+          <motion.h1
+            initial="hidden"
+            animate="visible"
+            variants={fadeUp}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-4xl md:text-6xl font-bold tracking-tight"
+          >
+            <div className="mx-auto text-center">
+              <span className="block">
+                <BlurText
+                  className="inline-block text-foreground mb-2"
+                  text="Powerful tools"
+                />
+              </span>
+
+              <span className="block sm:hidden">
+                <BlurText
+                  className="inline-block text-accent mb-2"
+                  text="Your data never leaves your device"
+                />
+              </span>
+
+              <span className="hidden sm:block">
+                <BlurText
+                  className="inline-block text-accent mb-2"
+                  text="Your data never leaves"
+                />
+              </span>
+
+              <span className="hidden sm:block">
+                <BlurText
+                  className="inline-block text-accent mb-2"
+                  text="your device"
+                />
+              </span>
+            </div>
+          </motion.h1>
+
+          <motion.p
+            initial="hidden"
+            animate="visible"
+            variants={fadeUp}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mt-6 text-base md:text-lg text-muted-foreground max-w-2xl mx-auto"
+          >
+            High-quality tools directly in your browser.
+            <br />
+            No uploads. No tracking. No ads.
+          </motion.p>
+
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={fadeUp}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mt-10 flex justify-center gap-4"
           >
             <Link
               href="/tools"
-              className="inline-flex shadow-md items-center gap-2 rounded-xl bg-accent px-6 py-3 text-sm font-medium text-accent-foreground hover:opacity-90 transition"
+              className="inline-flex shadow-md items-center gap-2 rounded-xl bg-accent px-6 py-3 text-sm font-medium text-accent-foreground"
             >
               Explore tools
               <ArrowRight className="w-4 h-4" />
             </Link>
-          </motion.div>
 
-          {/* Secondary CTA */}
-          <motion.div
-            whileHover={{
-              scale: 1.05,
-              y: -1,
-            }}
-            whileTap={{ scale: 0.96 }}
-            transition={{ type: "spring", stiffness: 260, damping: 20 }}
-          >
             <Link
               href="/tools/invoice-generator"
-              className="inline-flex items-center shadow-md gap-2 rounded-xl border border-border px-6 py-3 text-sm font-medium hover:bg-muted transition"
+              className="inline-flex shadow-md items-center gap-2 backdrop-blur-sm rounded-xl border px-6 py-3 text-sm font-medium hover:bg-muted"
             >
               Try tools instantly
             </Link>
           </motion.div>
-        </motion.div>
-      </section>
+        </section>
+      
 
       {/* FEATURES */}
       <section className="max-w-7xl mx-auto px-6 pb-24">
@@ -129,7 +158,7 @@ export default function HomePage() {
             <motion.div
               key={item.title}
               variants={fadeUp}
-              className="rounded-2xl border border-border bg-card/40 p-6"
+              className="rounded-2xl border border-border backdrop-blur-sm shadow-sm p-6"
             >
               <h3 className="text-lg font-semibold">{item.title}</h3>
               <p className="mt-2 text-sm text-muted-foreground">{item.desc}</p>
@@ -137,6 +166,7 @@ export default function HomePage() {
           ))}
         </motion.div>
       </section>
+      </div>
 
       {/*  VALUE SECTION  */}
       <section className="max-w-7xl mx-auto px-6 pt-12 pb-24 bg-gradient-to-br from-accent/5 to-transparent ">

@@ -190,3 +190,12 @@ body::-webkit-scrollbar {
   }
 }
 
+:root {
+  --shiny-base: #525252;      /* neutral-600 */
+  --shiny-shine: #ffffff;
+}
+
+.dark {
+  --shiny-base: #737373;      /* neutral-500 */
+  --shiny-shine: #ffffff;    /* pure white shine */
+}
