@@ -8,6 +8,7 @@ import MobileHeader from "@/components/mobile-header";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { ToolsSidebar } from "@/components/tools-sidebar";
 import { usePathname } from "next/navigation"
+import { Toaster } from "sonner";
 
 
 export default function ClientLayout({
@@ -46,6 +47,7 @@ export default function ClientLayout({
           <ToolsSidebar />
           <SidebarInset className="min-h-screen overflow-y-auto pt-16 md:pt-0">
             {children}
+            <Toaster position="bottom-right" />
           </SidebarInset>
         </SidebarProvider>
       </AuthProvider>

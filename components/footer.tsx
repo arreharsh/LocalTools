@@ -8,7 +8,7 @@ export function Footer() {
           
           {/* LEFT: BUILT BY */}
           <div className="text-center sm:text-left font-medium">
-            <span className="opacity-90">© {new Date().getFullYear()}</span> · Built with ♡ by Arre Harsh
+            <span className="opacity-90">© {new Date().getFullYear()}</span> · Built with ♡ by Harsh
           </div>
 
           {/* RIGHT: PRODUCT LINE */}

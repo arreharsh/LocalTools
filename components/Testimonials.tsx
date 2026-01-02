@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Star } from "lucide-react"
+import { toast } from "sonner";
 
 type Review = {
   name: string
@@ -36,7 +37,7 @@ const initialReviews: Review[] = [
   {
   name: "Rohit Sharma",
   role: "Backend Developer · Gurgaon",
-  avatar: "https://i.pravatar.cc/150?img=21",
+  avatar: "https://i.pravatar.cc/150?img=1",
   rating: 5,
   text: "The API and JSON tools saved me a lot of time during debugging. Everything feels snappy and well thought out. Great attention to performance.",
 },
@@ -48,7 +49,7 @@ const initialReviews: Review[] = [
   text: "I like how focused the platform is. No unnecessary tools, no noise. Just clean utilities that actually solve daily problems.",
 },
 {
-  name: "Priya Nair",
+  name: "Priyak Nair",
   role: "Software Engineer · Kochi",
   avatar: "https://i.pravatar.cc/150?img=68",
   rating: 5,
@@ -56,6 +57,9 @@ const initialReviews: Review[] = [
 },
 
 ]
+
+
+
 
 export default function Testimonials() {
   const [reviews, setReviews] = useState<Review[]>(initialReviews)
@@ -65,25 +69,51 @@ export default function Testimonials() {
   const [role, setRole] = useState("")
   const [text, setText] = useState("")
 
-  function submitReview() {
-    if (!name || !text || rating === 0) return
+  async function submitReview() {
+  if (!text.trim() || rating === 0) {
+    toast.error("Please add rating and write a review");
+    return;
+  }
 
+  const toastId = toast.loading("Submitting your review...");
+
+  try {
+    const res = await fetch("/api/email/review", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        role,
+        text,
+        rating,
+      }),
+    });
+
+    if (!res.ok) throw new Error();
+
+    // add review locally
     const newReview: Review = {
-      name,
+      name: name || "Anonymous",
       role: role || "User",
       rating,
       text,
-      avatar: `https://i.pravatar.cc/150?u=${name}`,
-    }
+      avatar: `https://i.pravatar.cc/150?u=${name || "user"}`,
+    };
 
-    setReviews([newReview, ...reviews])
+    setReviews([newReview, ...reviews]);
 
-    // reset
-    setName("")
-    setRole("")
-    setText("")
-    setRating(0)
+    toast.success("Thanks for your review! 🙌", { id: toastId });
+
+    // reset form
+    setName("");
+    setRole("");
+    setText("");
+    setRating(0);
+  } catch {
+    toast.error("Failed to submit review. Try again.", { id: toastId });
   }
+}
+
 
   return (
     <section className="border-t border-border">
