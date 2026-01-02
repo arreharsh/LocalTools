@@ -188,7 +188,7 @@ body::-webkit-scrollbar {
 }
  
 :root {
-  --shiny-base: #525252;      /* neutral-600 */
+  --shiny-base: #000000;      /* neutral-600 */
   --shiny-shine: #ffffff;
 }
 

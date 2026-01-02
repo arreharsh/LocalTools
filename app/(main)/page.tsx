@@ -15,6 +15,7 @@ const fadeUp = {
   visible: { opacity: 1, y: 0 },
   transition: { duration: 0.6 },
 };
+const MotionLink = motion(Link);
 
 export default function HomePage() {
   return (
@@ -67,7 +68,7 @@ export default function HomePage() {
             <div className="mx-auto text-center">
               <span className="block">
                 <BlurText
-                  className="inline-block text-foreground mb-2"
+                  className="inline-block text-foreground mb-2 "
                   text="Powerful tools"
                 />
               </span>
@@ -100,11 +101,21 @@ export default function HomePage() {
             animate="visible"
             variants={fadeUp}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="mt-6 text-base md:text-lg text-muted-foreground max-w-2xl mx-auto"
+            className="relative mt-6 mx-auto max-w-sm text-sm md:text-base text-muted-foreground"
           >
-            High-quality tools directly in your browser.
-            <br />
-            No uploads. No tracking. No ads.
+            {/* subtle glass box */}
+            <span
+              className="
+      absolute inset-0 -z-10 rounded-xl
+       backdrop-blur-[2px]
+    "
+            />
+
+            <span className="block px-5 py-3 text-center">
+              High-quality tools directly in your browser.
+              <br />
+              No uploads. No tracking. No ads.
+            </span>
           </motion.p>
 
           <motion.div
@@ -114,58 +125,65 @@ export default function HomePage() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mt-10 flex justify-center gap-4"
           >
-            <Link
+            <MotionLink
               href="/tools"
+              whileHover={{ scale: 1.06, y: -2 }}
+              whileTap={{ scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 300, damping: 18 }}
               className="inline-flex shadow-md items-center gap-2 rounded-xl bg-accent px-6 py-3 text-sm font-medium text-accent-foreground"
             >
               Explore tools
               <ArrowRight className="w-4 h-4" />
-            </Link>
+            </MotionLink>
 
-            <Link
+            <MotionLink
               href="/tools/invoice-generator"
+              whileHover={{ scale: 1.05, y: -1 }}
+              whileTap={{ scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 260, damping: 20 }}
               className="inline-flex shadow-md items-center gap-2 backdrop-blur-sm rounded-xl border px-6 py-3 text-sm font-medium hover:bg-muted"
             >
               Try tools instantly
-            </Link>
+            </MotionLink>
           </motion.div>
         </section>
-      
 
-      {/* FEATURES */}
-      <section className="max-w-7xl mx-auto px-6 pb-24">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          transition={{ staggerChildren: 0.15 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6"
-        >
-          {[
-            {
-              title: "Built for real workflows",
-              desc: "High-usage tools like JSON, APIs and PDFs — not random gimmicks.",
-            },
-            {
-              title: "Fast & distraction-free",
-              desc: "No clutter, no ads. Just tools that do one thing really well.",
-            },
-            {
-              title: "Privacy-first by design",
-              desc: "Your data stays in your browser. Nothing is stored.",
-            },
-          ].map((item) => (
-            <motion.div
-              key={item.title}
-              variants={fadeUp}
-              className="rounded-2xl border border-border backdrop-blur-sm shadow-sm p-6"
-            >
-              <h3 className="text-lg font-semibold">{item.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{item.desc}</p>
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
+        {/* FEATURES */}
+        <section className="max-w-7xl mx-auto px-6 pb-24">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            transition={{ staggerChildren: 0.15 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+          >
+            {[
+              {
+                title: "Built for real workflows",
+                desc: "High-usage tools like JSON, APIs and PDFs — not random gimmicks.",
+              },
+              {
+                title: "Fast & distraction-free",
+                desc: "No clutter, no ads. Just tools that do one thing really well.",
+              },
+              {
+                title: "Privacy-first by design",
+                desc: "Your data stays in your browser. Nothing is stored.",
+              },
+            ].map((item) => (
+              <motion.div
+                key={item.title}
+                variants={fadeUp}
+                className="rounded-2xl border border-border backdrop-blur-sm shadow-sm p-6"
+              >
+                <h3 className="text-lg font-semibold">{item.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {item.desc}
+                </p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </section>
       </div>
 
       {/*  VALUE SECTION  */}
