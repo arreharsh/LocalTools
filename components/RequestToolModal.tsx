@@ -2,40 +2,60 @@
 
 import { useState } from "react";
 import Modal from "./Modal";
+import { toast } from "sonner";
 
 type Props = {
   open: boolean;
   onClose: () => void;
 };
 
-export default function RequestToolModal({
-  open,
-  onClose,
-}: Props) {
+export default function RequestToolModal({ open, onClose }: Props) {
   const [tool, setTool] = useState("");
   const [desc, setDesc] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const submit = () => {
-    if (!tool.trim()) return;
+  const submit = async () => {
+    if (!tool.trim()) {
+      toast.error("Please enter a tool name");
+      return;
+    }
 
-    // later: API / email / notion
-    console.log("Tool request:", {
-      tool,
-      desc,
-    });
+    if (loading) return;
 
-    setTool("");
-    setDesc("");
-    onClose();
+    setLoading(true);
+    const toastId = toast.loading("Submitting your request...");
+
+    try {
+      const res = await fetch("/api/email/request-tool", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tool,
+          desc,
+        }),
+      });
+
+      if (!res.ok) throw new Error();
+
+      toast.success("Tool request submitted 🚀", { id: toastId });
+
+      setTool("");
+      setDesc("");
+      onClose();
+    } catch {
+      toast.error("Failed to submit request. Try again.", {
+        id: toastId,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <Modal open={open} onClose={onClose} title="Request a tool">
       <div className="space-y-4">
         <div>
-          <label className="text-xs font-medium">
-            Tool name
-          </label>
+          <label className="text-xs font-medium">Tool name</label>
           <input
             value={tool}
             onChange={(e) => setTool(e.target.value)}
@@ -59,7 +79,8 @@ export default function RequestToolModal({
 
         <button
           onClick={submit}
-          className="w-full rounded-md bg-primary py-2 text-sm font-semibold text-primary-foreground"
+          disabled={loading}
+          className="w-full rounded-md bg-primary py-2 text-sm font-semibold text-primary-foreground disabled:opacity-60"
         >
           Submit request
         </button>
