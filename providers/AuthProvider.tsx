@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  useRef,
-} from "react";
+import { createContext, useContext, useEffect, useState, useRef } from "react";
 import type { User } from "@supabase/supabase-js";
 import { createSupabaseBrowser } from "@/lib/supabase/client";
 import AuthModal from "@/components/AuthModal";
@@ -33,11 +27,7 @@ const AuthModalContext = createContext<{ open: () => void }>({
   open: () => {},
 });
 
-export function AuthProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const supabaseRef = useRef(createSupabaseBrowser());
   const supabase = supabaseRef.current;
 
@@ -70,10 +60,7 @@ export function AuthProvider({
     }
 
     // ❌ expired → free
-    if (
-      data.pro_expires_at &&
-      new Date(data.pro_expires_at) < new Date()
-    ) {
+    if (data.pro_expires_at && new Date(data.pro_expires_at) < new Date()) {
       setPlan("free");
       setProExpiresAt(null);
       return;
@@ -110,12 +97,18 @@ export function AuthProvider({
       .catch(() => setLoading(false));
 
     const { data: sub } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      async (event, session) => {
         const sessionUser = session?.user ?? null;
         setUser(sessionUser);
 
         if (sessionUser) {
           loadUserPlan(sessionUser.id);
+
+          if (event === "SIGNED_IN") {
+            await fetch("/api/email/send-welcome", {
+              method: "POST",
+            });
+          }
         } else {
           setPlan("free");
           setProExpiresAt(null);
@@ -149,14 +142,9 @@ export function AuthProvider({
         pro_expires_at: proExpiresAt,
       }}
     >
-      <AuthModalContext.Provider
-        value={{ open: () => setIsModalOpen(true) }}
-      >
+      <AuthModalContext.Provider value={{ open: () => setIsModalOpen(true) }}>
         {children}
-        <AuthModal
-          open={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-        />
+        <AuthModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </AuthModalContext.Provider>
     </AuthContext.Provider>
   );

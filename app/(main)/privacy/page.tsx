@@ -130,7 +130,7 @@ export default function PrivacyPolicyPage() {
             </h2>
             <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
               If you have any questions about this Privacy Policy or how your
-              data is handled, please contact us at <a className="font-medium text-accent hover:underline" href="mailto:support@example.com">support@example.com</a>
+              data is handled, please contact us at <a className="font-medium text-accent hover:underline" href="mailto:support@localtools.app">support@localtools.app</a>
             </p>
           </div>
 

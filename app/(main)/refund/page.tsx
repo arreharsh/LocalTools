@@ -132,10 +132,10 @@ export default function RefundPolicyPage() {
             <p className="mt-2 text-sm">
               <span className="font-medium">Email:</span>{" "}
               <a
-                href="mailto:support@example.com"
+                href="mailto:support@localtools.app"
                 className="text-accent hover:underline"
               >
-                support@example.com
+                support@localtools.app
               </a>
             </p>
           </div>
