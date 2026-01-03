@@ -170,19 +170,5 @@ export const toolCategories: ToolCategory[] = [
       },
     ],
   },
-  {
-    id: "text",
-    name: "Text Tools",
-    icon: Type,
-    tools: [
-      {
-        id: "textCleaner",
-        slug: "text-cleaner",
-        name: "Text Cleaner",
-        icon: Type,
-        category: "text",
-        access: "free",
-      },
-    ],
-  },
+ 
 ]

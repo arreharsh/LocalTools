@@ -14,7 +14,7 @@ type Review = {
 
 const initialReviews: Review[] = [
   {
-    name: "Aman Verma",
+    name: "Mansi Verma",
     role: "Frontend Engineer · Bangalore",
     avatar: "https://i.pravatar.cc/150?img=32",
     rating: 5,
@@ -49,7 +49,7 @@ const initialReviews: Review[] = [
   text: "I like how focused the platform is. No unnecessary tools, no noise. Just clean utilities that actually solve daily problems.",
 },
 {
-  name: "Priyak Nair",
+  name: "Priyank Nair",
   role: "Software Engineer · Kochi",
   avatar: "https://i.pravatar.cc/150?img=68",
   rating: 5,
