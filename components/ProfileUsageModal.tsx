@@ -2,8 +2,7 @@
 
 import { X } from "lucide-react";
 import { useUsage } from "@/hooks/useUsage";
-import { useAuth } from "@/providers/AuthProvider";
-import { useAuthModal } from "@/providers/AuthProvider";
+import { useAuth, useAuthModal } from "@/providers/AuthProvider";
 
 function formatTimeLeft(date: Date | null) {
   if (!date) return "";
@@ -22,23 +21,21 @@ export default function ProfileUsageModal({
   open: boolean;
   onClose: () => void;
 }) {
-  const { user } = useAuth();
+  const { user, plan: authPlan, isPro } = useAuth();
   const { open: openAuthModal } = useAuthModal();
+
   const {
-    plan,
     used,
     limit,
-    remaining,
     resetAt,
     loading,
-    isUnlimited,
   } = useUsage();
 
   if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="w-full max-w-xs sm:max-w-md rounded-xl bg-white shadow-lg ">
+      <div className="w-full max-w-xs sm:max-w-md rounded-xl bg-white shadow-lg">
         {/* Header */}
         <div className="flex items-center justify-between border-b px-5 py-4">
           <h2 className="text-lg font-semibold">Your Usage</h2>
@@ -61,7 +58,7 @@ export default function ProfileUsageModal({
                   Current plan
                 </span>
                 <span className="rounded-md bg-gray-100 px-2 py-1 text-xs font-medium uppercase">
-                  {plan}
+                  {isPro ? "pro" : authPlan}
                 </span>
               </div>
 
@@ -69,7 +66,7 @@ export default function ProfileUsageModal({
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>Daily usage</span>
-                  {isUnlimited ? (
+                  {isPro ? (
                     <span className="font-medium">Unlimited</span>
                   ) : (
                     <span className="font-medium">
@@ -78,7 +75,8 @@ export default function ProfileUsageModal({
                   )}
                 </div>
 
-                {!isUnlimited && (
+                {/* Progress bar (ONLY for non-pro) */}
+                {!isPro && (
                   <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
                     <div
                       className={`h-full rounded-full transition-all ${
@@ -98,13 +96,15 @@ export default function ProfileUsageModal({
                   </div>
                 )}
 
-                <p className="text-xs text-muted-foreground">
-                  Resets in {formatTimeLeft(resetAt)}
-                </p>
+                {!isPro && (
+                  <p className="text-xs text-muted-foreground">
+                    Resets in {formatTimeLeft(resetAt)}
+                  </p>
+                )}
               </div>
 
               {/* CTA */}
-              {plan === "guest" && (
+              {!user && (
                 <button
                   onClick={() => {
                     onClose();
@@ -116,7 +116,7 @@ export default function ProfileUsageModal({
                 </button>
               )}
 
-              {plan === "free" && (
+              {user && !isPro && (
                 <button
                   onClick={() => alert("Upgrade flow coming soon")}
                   className="w-full rounded-md bg-primary shadow-md font-medium py-2 text-sm text-white"
@@ -125,7 +125,7 @@ export default function ProfileUsageModal({
                 </button>
               )}
 
-              {plan === "pro" && (
+              {isPro && (
                 <p className="text-center text-sm text-emerald-600">
                   Pro plan active ✨
                 </p>

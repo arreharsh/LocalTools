@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAuth, useAuthModal } from "@/providers/AuthProvider";
 import { createSupabaseBrowser } from "@/lib/supabase/client";
 
@@ -18,7 +18,8 @@ export default function UserMenu() {
 
   const { open: openAuth } = useAuthModal();
 
-  const supabase = createSupabaseBrowser();
+  const supabaseRef = useRef(createSupabaseBrowser());
+  const supabase = supabaseRef.current;
 
   /* --- Skeleton while auth resolving --- */
   if (loading) return <UserMenuSkeleton />;

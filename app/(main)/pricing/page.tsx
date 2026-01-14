@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { Check, X } from "lucide-react";
-import { motion } from "framer-motion";
 import FAQSection from "@/components/FAQSection";
-import { ArrowLeft } from "lucide-react";
+
 import { useRouter } from "next/navigation";
 import { PricingSection } from "@/components/PricingSection";
 import { Footer } from "@/components/footer";
@@ -19,7 +18,6 @@ export default function PlansPage() {
   return (
     <main className="min-h-screen bg-background text-foreground">
       {/* HEADER */}
-
       <PricingSection />
 
       {/* COMPARISON TABLE */}

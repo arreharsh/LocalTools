@@ -10,10 +10,44 @@ import Script from "next/script";
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "LocalTools - Privacy Focused No-Tracking No-Ads",
-  description: "Developer tools for text, JSON, images, and more",
+export const metadata = {
+  metadataBase: new URL("https://localtools.app"),
+  title: {
+    default: "Local Tools – Free Online Tools",
+    template: "%s | Local Tools",
+  },
+  description:
+    "Local Tools offers fast, secure, privacy-first online tools for PDF, images, text, and more.",
+  keywords: [
+    "online tools",
+    "pdf tools",
+    "image tools",
+    "free tools",
+    "localtools",
+    "privacy-first",
+    "secure tools",
+    "text tools",
+    "file conversion",
+    "local processing",
+    "offline tools",
+    "browser-based tools",
+    "media tools",
+    "utility tools",
+    "productivity tools",
+    "localtools app",
+    "local tools online",
+    "local tools"
+  ],
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    type: "website",
+    siteName: "Local Tools",
+  },
 };
+
 
 export default function RootLayout({
   children,

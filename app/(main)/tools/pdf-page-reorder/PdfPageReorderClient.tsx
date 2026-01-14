@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { PDFDocument, degrees } from "pdf-lib";
 import HowToUse from "@/components/tool/HowToUse";
-import { runToolWithGuard } from "@/lib/runToolWithGuard";
 import { useAuthModal } from "@/providers/AuthProvider";
 
 

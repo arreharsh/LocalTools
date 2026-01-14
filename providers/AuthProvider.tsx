@@ -39,9 +39,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // ✅ PRO = plan === "pro" AND not expired
   const isPro =
-    plan === "pro" &&
-    proExpiresAt !== null &&
-    new Date(proExpiresAt) > new Date();
+  plan === "pro" &&
+  (proExpiresAt === null || new Date(proExpiresAt) > new Date());
+
 
   /* ---------------------------
      Load user plan + expiry
