@@ -5,6 +5,7 @@ import Testimonials from "@/components/Testimonials";
 import { ArrowRight, Sparkles, Check } from "lucide-react";
 import { motion } from "framer-motion";
 import { Footer } from "@/components/footer";
+import { Showcase } from "@/components/Showcase";
 import { PricingSection } from "@/components/PricingSection";
 import ShinyText from "@/components/ui/ShinyText";
 import BlurText from "@/components/BlurText";
@@ -38,21 +39,21 @@ export default function HomePage() {
         {/* Radial fade */}
         <div className="pointer-events-none absolute inset-0 bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_25%,black)] dark:bg-black" />
 
-        {/* HERO CONTENT (UNCHANGED) */}
+        {/* HERO CONTENT */}
         <section className="relative z-9 max-w-7xl mx-auto px-6 pb-20 pt-24 text-center">
           <motion.div
-            initial="hidden"
+            initial={{ opacity: 0, x: 24 }}
             animate="visible"
             variants={fadeUp}
             transition={{ duration: 0.6 }}
-            className="inline-flex items-center text-accent gap-2 px-4 py-1 mb-6 backdrop-blur-sm rounded-full bg-green-500/10 border-green-200/20 border border-border text-sm"
+            className="inline-flex items-center text-accent gap-2 px-4 py-1 mb-6 backdrop-blur-sm rounded-full bg-green-500/10 dark:border-green-200/20 border-black/20 border text-sm"
           >
             <ShinyText
               text="Privacy-first utility tools"
-              speed={2}
+              speed={8}
               delay={0}
               color={`#000000ff  `}
-              shineColor="#ffffffff"
+              shineColor="rgba(255, 255, 255, 0.5)"
               spread={120}
               direction="left"
               pauseOnHover
@@ -109,7 +110,7 @@ export default function HomePage() {
             <span
               className="
       absolute inset-0 -z-10 rounded-xl
-       backdrop-blur-[2px]
+       backdrop-blur-[3px]
     "
             />
 
@@ -125,14 +126,14 @@ export default function HomePage() {
             animate="visible"
             variants={fadeUp}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-10 flex justify-center gap-4"
+            className="mt-10 flex justify-center gap-8"
           >
             <MotionLink
               href="/tools"
               whileHover={{ scale: 1.06, y: -2 }}
               whileTap={{ scale: 0.96 }}
               transition={{ type: "spring", stiffness: 300, damping: 18 }}
-              className="inline-flex shadow-md items-center gap-2 rounded-xl bg-accent px-6 py-3 text-sm font-medium text-accent-foreground"
+              className="inline-flex scale-105 shadow-md items-center gap-2 rounded-xl bg-accent border border-foreground/20 px-6 py-3 text-sm font-medium text-accent-foreground"
             >
               Explore tools
               <ArrowRight className="w-4 h-4" />
@@ -143,7 +144,7 @@ export default function HomePage() {
               whileHover={{ scale: 1.05, y: -1 }}
               whileTap={{ scale: 0.96 }}
               transition={{ type: "spring", stiffness: 260, damping: 20 }}
-              className="inline-flex shadow-md items-center gap-2 backdrop-blur-sm rounded-xl border px-6 py-3 text-sm font-medium hover:bg-muted"
+              className="inline-flex scale-105 shadow-md items-center gap-2 backdrop-blur-sm rounded-xl border px-6 py-3 text-sm font-medium hover:bg-muted"
             >
               Try tools instantly
             </MotionLink>
@@ -187,6 +188,9 @@ export default function HomePage() {
           </motion.div>
         </section>
       </div>
+
+      {/* SHOWCASE */}
+      <Showcase />
 
       {/*  VALUE SECTION  */}
       <section className="max-w-7xl mx-auto px-6 pt-12 pb-24 bg-gradient-to-br from-accent/5 to-transparent ">

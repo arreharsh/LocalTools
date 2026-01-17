@@ -2,6 +2,7 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { useAuth, useAuthModal } from "@/providers/AuthProvider";
 import { useState } from "react";
 import { Lock } from "lucide-react";
 
@@ -10,66 +11,36 @@ const fadeUp = {
   visible: { opacity: 1, y: 0 },
 };
 
-// ✅ Razorpay payment links
 const RAZORPAY_LINKS = {
-  pro: "https://rzp.io/i/YOUR_LIFETIME_LINK",
-  "3day": "https://rzp.io/i/YOUR_3DAY_LINK",
+  pro: {
+    normal: "https://rzp.io/rzp/localtools-pro",
+    coupon: "https://rzp.io/rzp/Ltpro10off",
+  },
+  "3day": {
+    normal: "https://rzp.io/rzp/Ltpro3day",
+    coupon: "https://rzp.io/rzp/Ltpro10off3day",
+  },
 };
 
 export default function BillingPage() {
   const params = useSearchParams();
   const router = useRouter();
-
-  const SUGGESTED_COUPONS = ["HARSH10", "PROONLY20"];
+  const { user, loading: authLoading } = useAuth();
+  const { open } = useAuthModal();
 
   const plan = (params.get("plan") as "pro" | "3day") ?? "pro";
-
   const isProLifetime = plan === "pro";
 
-  // ✅ INR prices
   const basePrice = isProLifetime ? 499 : 199;
 
-  const planLabel = isProLifetime ? "Pro Lifetime" : "3-Day Pro Access";
-
   const [coupon, setCoupon] = useState("");
-  const [finalPrice, setFinalPrice] = useState(basePrice);
-  const [discountAmount, setDiscountAmount] = useState(0);
-  const [error, setError] = useState("");
+  const [couponValid, setCouponValid] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  async function applySuggestedCoupon(code: string) {
-    setCoupon(code);
-    setError("");
-    setDiscountAmount(0);
-    setFinalPrice(basePrice);
+  const finalPrice = couponValid ? Math.round(basePrice * 0.9) : basePrice;
 
-    setLoading(true);
-
-    try {
-      const res = await fetch("/api/coupon/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          code,
-          plan,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!data.valid) {
-        setError(data.message || "Invalid coupon");
-        return;
-      }
-
-      setFinalPrice(data.finalAmount);
-      setDiscountAmount(data.discountAmount);
-    } catch {
-      setError("Something went wrong");
-    } finally {
-      setLoading(false);
-    }
-  }
+  const planLabel = isProLifetime ? "Pro Lifetime" : "3-Day Pro Access";
 
   async function applyCoupon() {
     if (!coupon.trim()) return;
@@ -90,59 +61,33 @@ export default function BillingPage() {
       const data = await res.json();
 
       if (!data.valid) {
+        setCouponValid(false);
         setError(data.message || "Invalid coupon");
-        setFinalPrice(basePrice);
-        setDiscountAmount(0);
         return;
       }
 
-      setFinalPrice(data.finalAmount);
-      setDiscountAmount(data.discountAmount);
-    } catch (e) {
-      setError("Something went wrong");
-      setFinalPrice(basePrice);
-      setDiscountAmount(0);
+      setCouponValid(true);
+    } catch {
+      setError("Coupon verification failed");
+      setCouponValid(false);
     } finally {
       setLoading(false);
     }
   }
-  async function handlePay() {
-    const res = await fetch("/api/razorpay/order", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        amount: finalPrice, // 👈 coupon applied price
-        plan,
-      }),
-    });
 
-    const order = await res.json();
+  function handlePay() {
+    if (authLoading) return;
 
-    const options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-      amount: order.amount,
-      currency: "INR",
-      name: "LocalTools",
-      description: plan === "pro" ? "Pro Lifetime Access" : "3-Day Pro Access",
-      order_id: order.id,
-      handler: function (response: any) {
-        window.location.href = "/billing/success";
-      },
-      prefill: {
-        email: "",
-      },
-      theme: {
-        color: "#6366f1",
-      },
-    };
-
-    if (!(window as any).Razorpay) {
-      alert("Razorpay SDK failed to load. Please refresh.");
+    if (!user) {
+      open();
       return;
     }
 
-    const rzp = new (window as any).Razorpay(options);
-    rzp.open();
+    const link = couponValid
+      ? RAZORPAY_LINKS[plan].coupon
+      : RAZORPAY_LINKS[plan].normal;
+
+    window.location.href = link;
   }
 
   return (
@@ -187,30 +132,14 @@ export default function BillingPage() {
           {/* COUPON */}
           <div className="mt-8">
             <label className="block text-sm font-medium mb-2">
-              Coupon code
+              Have a coupon?
             </label>
 
-            {/* Suggested coupons */}
-            <div className="mb-3 flex gap-2 flex-wrap">
-              {SUGGESTED_COUPONS.map((code) => (
-                <button
-                  key={code}
-                  type="button"
-                  onClick={() => applySuggestedCoupon(code)}
-                  disabled={loading}
-                  className="rounded-md border border-border px-3 py-1 text-xs hover:bg-muted transition disabled:opacity-60"
-                >
-                  {code} 🎁
-                </button>
-              ))}
-            </div>
-
-            {/* Manual input */}
             <div className="flex gap-2">
               <input
                 value={coupon}
                 onChange={(e) => setCoupon(e.target.value)}
-                placeholder="ENTER CODE"
+                placeholder="Enter coupon code"
                 className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm"
               />
               <button
@@ -222,20 +151,26 @@ export default function BillingPage() {
               </button>
             </div>
 
-            {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
+            {couponValid && (
+              <p className="mt-2 text-xs text-accent">
+                Coupon applied 🎉 You’ll get 10% OFF
+              </p>
+            )}
+
+            {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
           </div>
 
           {/* PRICE */}
-          <div className="mt-8 space-y-2 text-sm">
+          <div className="mt-6 space-y-2 text-sm">
             <div className="flex justify-between">
               <span>Subtotal</span>
               <span>₹{basePrice}</span>
             </div>
 
-            {discountAmount > 0 && (
+            {couponValid && (
               <div className="flex justify-between text-accent">
-                <span>Discount</span>
-                <span>-₹{discountAmount}</span>
+                <span>Discount (10%)</span>
+                <span>-₹{basePrice - finalPrice}</span>
               </div>
             )}
 
@@ -248,9 +183,14 @@ export default function BillingPage() {
           {/* PAY */}
           <button
             onClick={handlePay}
-            className="mt-8 w-full rounded-xl bg-accent px-4 py-3 text-sm font-medium text-accent-foreground hover:opacity-90 transition"
+            disabled={loading || authLoading}
+            className="mt-8 w-full rounded-xl bg-accent px-4 py-3 text-sm font-medium text-accent-foreground hover:opacity-90 transition disabled:opacity-60"
           >
-            Pay ₹{finalPrice}
+            {authLoading
+              ? "Checking session..."
+              : user
+                ? `Pay ₹${finalPrice}`
+                : "Login to continue"}
           </button>
 
           {/* TRUST */}

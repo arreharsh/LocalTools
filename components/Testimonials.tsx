@@ -1,16 +1,17 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Star } from "lucide-react"
+import { useState } from "react";
+import { Star } from "lucide-react";
 import { toast } from "sonner";
+import Tilt from "react-parallax-tilt";
 
 type Review = {
-  name: string
-  role: string
-  avatar: string
-  rating: number
-  text: string
-}
+  name: string;
+  role: string;
+  avatar: string;
+  rating: number;
+  text: string;
+};
 
 const initialReviews: Review[] = [
   {
@@ -35,85 +36,80 @@ const initialReviews: Review[] = [
     text: "Privacy-first approach is what sold me. Everything runs locally and performance is solid.",
   },
   {
-  name: "Rohit Sharma",
-  role: "Backend Developer · Gurgaon",
-  avatar: "https://i.pravatar.cc/150?img=1",
-  rating: 5,
-  text: "The API and JSON tools saved me a lot of time during debugging. Everything feels snappy and well thought out. Great attention to performance.",
-},
-{
-  name: "Kunal Mehta",
-  role: "Indie Hacker · Remote",
-  avatar: "https://i.pravatar.cc/150?img=54",
-  rating: 4,
-  text: "I like how focused the platform is. No unnecessary tools, no noise. Just clean utilities that actually solve daily problems.",
-},
-{
-  name: "Priyank Nair",
-  role: "Software Engineer · Kochi",
-  avatar: "https://i.pravatar.cc/150?img=68",
-  rating: 5,
-  text: "Privacy-first approach is a big win for me. I can paste sensitive data without worrying. UI is minimal and very easy to use.",
-},
-
-]
-
-
-
+    name: "Rohit Sharma",
+    role: "Backend Developer · Gurgaon",
+    avatar: "https://i.pravatar.cc/150?img=1",
+    rating: 5,
+    text: "The API and JSON tools saved me a lot of time during debugging. Everything feels snappy and well thought out. Great attention to performance.",
+  },
+  {
+    name: "Kunal Mehta",
+    role: "Indie Hacker · Remote",
+    avatar: "https://i.pravatar.cc/150?img=54",
+    rating: 4,
+    text: "I like how focused the platform is. No unnecessary tools, no noise. Just clean utilities that actually solve daily problems.",
+  },
+  {
+    name: "Priyank Nair",
+    role: "Software Engineer · Kochi",
+    avatar: "https://i.pravatar.cc/150?img=68",
+    rating: 5,
+    text: "Privacy-first approach is a big win for me. I can paste sensitive data without worrying. UI is minimal and very easy to use.",
+  },
+];
 
 export default function Testimonials() {
-  const [reviews, setReviews] = useState<Review[]>(initialReviews)
-  const [rating, setRating] = useState(0)
-  const [hover, setHover] = useState(0)
-  const [name, setName] = useState("")
-  const [role, setRole] = useState("")
-  const [text, setText] = useState("")
+  const [reviews, setReviews] = useState<Review[]>(initialReviews);
+  const [rating, setRating] = useState(0);
+  const [hover, setHover] = useState(0);
+  const [name, setName] = useState("");
+  const [role, setRole] = useState("");
+  const [text, setText] = useState("");
 
   async function submitReview() {
-  if (!text.trim() || rating === 0) {
-    toast.error("Please add rating and write a review");
-    return;
-  }
+    if (!text.trim() || rating === 0) {
+      toast.error("Please add rating and write a review");
+      return;
+    }
 
-  const toastId = toast.loading("Submitting your review...");
+    const toastId = toast.loading("Submitting your review...");
 
-  try {
-    const res = await fetch("/api/email/review", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name,
-        role,
-        text,
+    try {
+      const res = await fetch("/api/email/review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          role,
+          text,
+          rating,
+        }),
+      });
+
+      if (!res.ok) throw new Error();
+
+      // add review locally
+      const newReview: Review = {
+        name: name || "Anonymous",
+        role: role || "User",
         rating,
-      }),
-    });
+        text,
+        avatar: `https://i.pravatar.cc/150?u=${name || "user"}`,
+      };
 
-    if (!res.ok) throw new Error();
+      setReviews([newReview, ...reviews]);
 
-    // add review locally
-    const newReview: Review = {
-      name: name || "Anonymous",
-      role: role || "User",
-      rating,
-      text,
-      avatar: `https://i.pravatar.cc/150?u=${name || "user"}`,
-    };
+      toast.success("Thanks for your review! 🙌", { id: toastId });
 
-    setReviews([newReview, ...reviews]);
-
-    toast.success("Thanks for your review! 🙌", { id: toastId });
-
-    // reset form
-    setName("");
-    setRole("");
-    setText("");
-    setRating(0);
-  } catch {
-    toast.error("Failed to submit review. Try again.", { id: toastId });
+      // reset form
+      setName("");
+      setRole("");
+      setText("");
+      setRating(0);
+    } catch {
+      toast.error("Failed to submit review. Try again.", { id: toastId });
+    }
   }
-}
-
 
   return (
     <section className="border-t border-border">
@@ -131,42 +127,51 @@ export default function Testimonials() {
         {/* REVIEWS GRID */}
         <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {reviews.map((r, idx) => (
-            <div
+            <Tilt
               key={idx}
-              className="rounded-2xl border border-border bg-card/40 p-6"
+              tiltMaxAngleX={8}
+              tiltMaxAngleY={8}
+              perspective={1000}
+              glareEnable={true}
+              glareMaxOpacity={0.12}
+              transitionSpeed={2500}
+              scale={1.03}
+              className="h-full will-change-transform"
             >
-              {/* USER */}
-              <div className="flex items-center gap-4">
-                <img
-                  src={r.avatar}
-                  alt={r.name}
-                  className="w-12 h-12 rounded-full object-cover"
-                />
-                <div>
-                  <p className="font-medium leading-tight">{r.name}</p>
-                  <p className="text-xs text-muted-foreground">{r.role}</p>
-                </div>
-              </div>
-
-              {/* STARS */}
-              <div className="flex gap-1 mt-4">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`w-4 h-4 ${
-                      i < r.rating
-                        ? "fill-yellow-500 text-yellow-400"
-                        : "text-muted-foreground"
-                    }`}
+              <div className="rounded-2xl border border-border bg-card/40 p-6 h-full">
+                {/* USER */}
+                <div className="flex items-center gap-4">
+                  <img
+                    src={r.avatar}
+                    alt={r.name}
+                    className="w-12 h-12 rounded-full object-cover"
                   />
-                ))}
-              </div>
+                  <div>
+                    <p className="font-medium leading-tight">{r.name}</p>
+                    <p className="text-xs text-muted-foreground">{r.role}</p>
+                  </div>
+                </div>
 
-              {/* TEXT */}
-              <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-                “{r.text}”
-              </p>
-            </div>
+                {/* STARS */}
+                <div className="flex gap-1 mt-4">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-4 h-4 ${
+                        i < r.rating
+                          ? "fill-yellow-500 text-yellow-400"
+                          : "text-muted-foreground"
+                      }`}
+                    />
+                  ))}
+                </div>
+
+                {/* TEXT */}
+                <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
+                  “{r.text}”
+                </p>
+              </div>
+            </Tilt>
           ))}
         </div>
 
@@ -230,5 +235,5 @@ export default function Testimonials() {
         </div>
       </div>
     </section>
-  )
+  );
 }

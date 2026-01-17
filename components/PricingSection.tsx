@@ -13,7 +13,7 @@ const fadeUp = {
 
 
 export function PricingSection() {
-  const { plan, pro_expires_at } = useAuth();
+  const { isPro, pro_expires_at } = useAuth();
  
   const router = useRouter();
 
@@ -25,13 +25,13 @@ const goTo3Day = () => {
   router.push("/billing?plan=3day");
 };
 
-  const isPro =
-    plan === "pro" &&
-    pro_expires_at &&
-    new Date(pro_expires_at) > new Date();
+ 
 
   const isLifetime =
-    isPro && new Date(pro_expires_at) > new Date("2090-01-01");
+  isPro &&
+  pro_expires_at &&
+  new Date(pro_expires_at) > new Date("2090-01-01");
+
 
   return (
     <section className=" bg-background to-transparent">
