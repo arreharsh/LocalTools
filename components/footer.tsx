@@ -39,10 +39,6 @@ export function Footer() {
             <Link href="/refund" className="hover:text-foreground underline transition">
               Refund Policy
             </Link>
-            <span className="opacity-40">•</span>
-            <Link href="/contact" className="hover:text-foreground underline transition">
-              Contact
-            </Link>
           </div>
 
         </div>
