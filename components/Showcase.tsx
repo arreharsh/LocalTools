@@ -11,16 +11,17 @@ export function Showcase() {
   const ScreenVideoUrl = "https://ik.imagekit.io/arreharsh/localtools.mp4";
   const screenshotUrl = "https://ik.imagekit.io/arreharsh/Screenshot.png?updatedAt=1768648533036";
   const MobileScreenshotUrl = "https://ik.imagekit.io/arreharsh/IMG_3505.PNG";
+  const tabletScreenshotUrl = "https://ik.imagekit.io/arreharsh/Screenshot%202026-01-18%20012140.png";
 
   return (
     <section className="py-2 md:py-16 bg-background relative overflow-hidden">
       {/* Background Ambient Glows */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-black/5 blur-[160px] rounded-full -z-10" />
 
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-6 pb-16">
        
 
-        <div className="relative flex flex-col items-center justify-center h-screen max-h-screen">
+        <div className="relative flex flex-col  items-center justify-center min-h-[300px] md:h-screen">
           
           {/* PC / Desktop - The Main Frame */}
           <motion.div onClick={() => router.push('/tools')}
@@ -39,7 +40,12 @@ export function Showcase() {
                     autoPlay 
                     loop 
                     muted 
-                    className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-1000"
+                    className="w-full h-full hidden md:block object-cover opacity-80 group-hover:scale-105 transition-transform duration-1000"
+                  />
+                  <img 
+                    src={tabletScreenshotUrl} 
+                    alt="Mobile Interface" 
+                    className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700 md:hidden"
                   />
                   <div className="absolute inset-0 bg-gradient-to-tr from-black/40 via-transparent to-transparent" />
                   
@@ -68,9 +74,9 @@ export function Showcase() {
             whileInView={{ opacity: 1, x: 0, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute left-[-2%] md:left-[5%] bottom-[5%] md:bottom-[10%] z-20 w-[35%] md:w-[30%] max-w-[400px]" >
+            className="absolute left-[-2%] md:left-[5%] bottom-[5%] md:bottom-[10%] z-20 w-[45%] md:w-[30%] max-w-[400px]" >
             <Tilt tiltMaxAngleX={6} tiltMaxAngleY={6} scale={1.05} transitionSpeed={2000}>
-              <div className="relative aspect-[4/3] bg-zinc-900 rounded-2xl md:rounded-[2.5rem] p-2 md:p-3 border border-white/20 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.18)] dark:shadow-[0_30px_60px_-15px_rgba(255,255,255,0.1)]">
+              <div className="relative aspect-[4/3] bg-zinc-900 rounded-2xl md:rounded-[2.5rem] p-1 md:p-3 border border-white/20 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.18)] dark:shadow-[0_30px_60px_-15px_rgba(255,255,255,0.1)]">
                 <div className="w-full h-full bg-zinc-950 rounded-xl md:rounded-[1.8rem] overflow-hidden group border border-white/10">
                   <img 
                     src={screenshotUrl} 
@@ -88,12 +94,12 @@ export function Showcase() {
             whileInView={{ opacity: 1, x: 0, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 1, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute right-[-2%] md:right-[10%] bottom-[-5%] md:bottom-[0%] z-30 w-[22%] md:w-[15%] max-w-[240px]" >
+            className="absolute right-[-2%] md:right-[10%] bottom-[2%] md:bottom-[0%] z-30 w-[22%] md:w-[15%] max-w-[240px]" >
             <Tilt tiltMaxAngleX={12} tiltMaxAngleY={12} scale={1.1} transitionSpeed={2000}>
-              <div className="relative  aspect-[9/19] bg-zinc-900 rounded-[1.5rem] md:rounded-[1.8rem] p-1.5 md:p-2.5 border border-white/20 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.18)] dark:shadow-[0_40px_80px_-20px_rgba(255,255,255,0.15)]">
-                <div className="w-full md:h-full bg-zinc-950 rounded-[1rem] md:rounded-[1.2rem] overflow-hidden group border border-white/10 relative">
+              <div className="relative md:aspect-[9/19] bg-zinc-900 rounded-2xl md:rounded-[1.8rem] p-1 md:p-2.5 border border-white/20 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.18)] dark:shadow-[0_40px_80px_-20px_rgba(255,255,255,0.15)]">
+                <div className="w-full md:h-full bg-zinc-950 rounded-xl md:rounded-[1.2rem] overflow-hidden group border border-white/10 relative">
                   {/* Dynamic Island */}
-                  <div className="absolute top-2 left-1/2 -translate-x-1/2 w-[35%] h-[4%] bg-zinc-900 rounded-full z-10" />
+                  <div className="absolute top-1 md:top-2 left-1/2 -translate-x-1/2 w-[35%] h-[4%] bg-zinc-900 rounded-full z-10" />
                   
                   <img 
                     src={MobileScreenshotUrl} 
@@ -104,7 +110,9 @@ export function Showcase() {
               </div>
             </Tilt>
           </motion.div>
+          
         </div>
+        <span className="text-center block bg-muted py-1 px-2 rounded-md md:hidden mt-4 text-sm">Compatible with all devices</span>
       </div>
     </section>
   );
