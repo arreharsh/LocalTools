@@ -34,8 +34,8 @@ export default function ProfileUsageModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="w-full max-w-xs sm:max-w-md rounded-xl bg-white shadow-lg">
+    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30 px-4">
+      <div className="w-full max-w-xs sm:max-w-md dark:border-2 border-border rounded-xl bg-background shadow-lg">
         {/* Header */}
         <div className="flex items-center justify-between border-b px-5 py-4">
           <h2 className="text-lg font-semibold">Your Usage</h2>
@@ -57,7 +57,7 @@ export default function ProfileUsageModal({
                 <span className="text-sm text-muted-foreground">
                   Current plan
                 </span>
-                <span className="rounded-md bg-gray-100 px-2 py-1 text-xs font-medium uppercase">
+                <span className="rounded-md bg-muted-foreground/10 px-2 py-1 text-xs font-medium uppercase">
                   {isPro ? "pro" : authPlan}
                 </span>
               </div>
@@ -77,7 +77,7 @@ export default function ProfileUsageModal({
 
                 {/* Progress bar (ONLY for non-pro) */}
                 {!isPro && (
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-muted-foreground/10">
                     <div
                       className={`h-full rounded-full transition-all ${
                         used / (limit ?? 1) >= 1
@@ -110,7 +110,7 @@ export default function ProfileUsageModal({
                     onClose();
                     openAuthModal();
                   }}
-                  className="w-full rounded-md bg-primary py-2 text-sm text-white"
+                  className="w-full rounded-md bg-primary py-2 text-sm text-white shadow-md font-medium"
                 >
                   Login to get more usage
                 </button>
