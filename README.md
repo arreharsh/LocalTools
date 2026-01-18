@@ -108,7 +108,7 @@ Contributions are welcome! Feel free to:
 - [x] JWT Tools
 - [x] Public API Response Viewer
 - [x] Admin Panel for Subscription Management
-- [ ] Telegram Bot Integration
+- [x] [Telegram Bot Integration](https://t.me/localtools_bot)
 - [ ] Public API Endpoints
 - [ ] More tools (continuously updated)
 
