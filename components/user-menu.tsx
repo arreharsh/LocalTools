@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth, useAuthModal } from "@/providers/AuthProvider";
 import { createSupabaseBrowser } from "@/lib/supabase/client";
 
@@ -17,6 +18,7 @@ export default function UserMenu() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const { open: openAuth } = useAuthModal();
+  const navigation = useRouter();
 
   const supabaseRef = useRef(createSupabaseBrowser());
   const supabase = supabaseRef.current;
@@ -95,7 +97,7 @@ export default function UserMenu() {
                     isGuest ? "hidden" : ""
                   }`}
                   onClick={() => {
-                    alert("Upgrade flow coming soon 🚀");
+                    navigation.push("/pricing");
                   }}
                 >
                   <Sparkles className="size-4 text-yellow-500" />
