@@ -140,7 +140,7 @@ export default function BillingPage() {
                 value={coupon}
                 onChange={(e) => setCoupon(e.target.value)}
                 placeholder="Enter coupon code"
-                className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm"
+                className="flex-1 uppercase rounded-lg border border-border bg-background px-3 py-2 text-sm"
               />
               <button
                 onClick={applyCoupon}
