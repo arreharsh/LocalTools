@@ -2,6 +2,7 @@
 
 import { X } from "lucide-react";
 import { useUsage } from "@/hooks/useUsage";
+import { useRouter } from "next/navigation";
 import { useAuth, useAuthModal } from "@/providers/AuthProvider";
 
 function formatTimeLeft(date: Date | null) {
@@ -23,6 +24,8 @@ export default function ProfileUsageModal({
 }) {
   const { user, plan: authPlan, isPro } = useAuth();
   const { open: openAuthModal } = useAuthModal();
+
+  const navigation = useRouter();
 
   const {
     used,
@@ -118,7 +121,7 @@ export default function ProfileUsageModal({
 
               {user && !isPro && (
                 <button
-                  onClick={() => alert("Upgrade flow coming soon")}
+                  onClick={() => navigation.push("/pricing")}
                   className="w-full rounded-md bg-primary shadow-md font-medium py-2 text-sm text-white"
                 >
                   Upgrade to Pro
