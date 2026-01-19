@@ -121,7 +121,7 @@ export default function ProfileUsageModal({
 
               {user && !isPro && (
                 <button
-                  onClick={() => navigation.push("/pricing")}
+                  onClick={() =>{  onClose(); navigation.push("/pricing")}}
                   className="w-full rounded-md bg-primary shadow-md font-medium py-2 text-sm text-white"
                 >
                   Upgrade to Pro
