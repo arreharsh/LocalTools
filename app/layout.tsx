@@ -1,11 +1,10 @@
 import type React from "react";
-import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 
 
 import "./globals.css";
-import Script from "next/script";
+
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
@@ -66,10 +65,7 @@ export default function RootLayout({
         {/* ClientLayout */}
         {children}
         <Analytics />
-        <Script
-          src="https://checkout.razorpay.com/v1/checkout.js"
-          strategy="afterInteractive"
-        />
+        
       </body>
       
     </html>

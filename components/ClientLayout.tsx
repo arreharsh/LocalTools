@@ -7,29 +7,32 @@ import { useEffect, useState } from "react";
 import MobileHeader from "@/components/mobile-header";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { ToolsSidebar } from "@/components/tools-sidebar";
-import { usePathname } from "next/navigation"
+import { usePathname } from "next/navigation";
 import { Toaster } from "sonner";
-
 
 export default function ClientLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  
-  const pathname = usePathname()
-  const isHome = pathname === "/" || pathname === "/tools" || pathname === "/billing"
+  const pathname = usePathname();
+  const isHome =
+    pathname === "/" ||
+    pathname === "/tools" ||
+    pathname === "/billing" ||
+    pathname === "/pricing" ||
+    pathname === "/refund" ||
+    pathname === "/privacy";
 
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (isHome) {
-      setOpen(false)
+      setOpen(false);
     } else {
-      setOpen(true)
+      setOpen(true);
     }
-  }, [isHome])
-  
+  }, [isHome]);
 
   return (
     <ThemeProvider
